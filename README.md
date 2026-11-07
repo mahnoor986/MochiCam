@@ -25,7 +25,7 @@ Scan from inside Expo Go: the phone's normal camera opens the link in Chrome, wh
 | --- | --- |
 | No QR code, only "Logs for your project will appear below" | You're in the MSYS2/UCRT64 bash terminal. Use PowerShell or Command Prompt instead. |
 | `npx.ps1 cannot be loaded because running scripts is disabled` | Run `npx.cmd expo start`, or once: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` |
-| Phone can't connect (office Wi-Fi, firewall, different network) | Use a tunnel. Logged in to Expo (`npx.cmd expo login`, once): `npx.cmd expo start --tunnel`. No account: `npx.cmd expo start --tunnel ngrok` (`@expo/ngrok` is a dev dependency of the project, because Expo can't find a global copy when the Windows user folder has a space in it) |
+| Phone can't connect (office Wi-Fi, firewall, different network) | Use a tunnel. Logged in to Expo (`npx.cmd expo login`, once): `npx.cmd expo start --tunnel`. No account: `npx.cmd expo start --tunnel ngrok` (press **Y** if it asks to install `@expo/ngrok`) |
 | `Couldn't create a signed tunnel URL… You're not logged in` | Since SDK 58, plain `--tunnel` needs an Expo login. Run `npx.cmd expo login`, or use `--tunnel ngrok` |
 | The DevTools "ERROR… using a fallback version" line | Harmless, ignore it |
 | Expo Go stuck on the loading screen | The dev server was closed or is stale. Close Expo Go, run `npx.cmd expo start --clear` again, and keep the terminal open |
@@ -40,6 +40,25 @@ Expo Go is a shared app, so a few things only work properly in your own installe
 - **The "MochiCam" album.** Android limits media-library access inside Expo Go. If saving to the album fails,
   MochiCam keeps going: every photo and strip is still saved inside the app and shows in its gallery.
 - The app name, icon and permission texts show as "Expo Go" instead of MochiCam.
+
+## Share it with friends (no Expo Go, no laptop)
+
+GitHub builds an installable APK for you and keeps it at one permanent link.
+
+- **Friends' download page:** <https://mahnoor986.github.io/MochiCam/>. Send them this; it has a big download
+  button and install steps.
+- **Direct APK link:** <https://github.com/mahnoor986/MochiCam/releases/latest/download/MochiCam.apk>
+
+**Making a new version:** push your code to `main` and a build starts by itself. Or start one by hand:
+**Actions** tab → **Build APK** → **Run workflow**. It takes about 15–20 minutes, then the links above serve the
+new APK. Friends install it over the old one and keep their photos.
+
+**One-time setup for the download page:** Settings → Pages → Source: **Deploy from a branch**, Branch: **main**,
+folder **/docs** → Save.
+
+The build lives in [`.github/workflows/build-apk.yml`](.github/workflows/build-apk.yml) and the page in
+[`docs/index.html`](docs/index.html). The APK is for 64-bit Android phones (practically every phone from the
+last 7+ years) and is signed with the standard Expo key, so every build updates the previous one.
 
 ## Preview on the laptop
 

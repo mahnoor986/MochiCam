@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MochiCam ♡ download</title>
+<meta name="description" content="Get MochiCam, the kawaii photobooth camera, on your Android phone.">
+<meta property="og:title" content="MochiCam ♡ get the app">
+<meta property="og:description" content="kawaii photobooth camera · 4-cut strips · cute filters. tap to download for android ✨">
+<meta name="theme-color" content="#FFE4EF">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%B0%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #FFB7D5; --pink-deep: #FF8FBF; --pink-soft: #FFE4EF;
+    --cream: #FFF6F0; --white: #FFFFFF;
+    --mint: #B8F0D8; --lav: #D9C6FF; --lav-soft: #F1EAFF; --butter: #FFF1A8; --butter-deep: #FFE07A;
+    --plum: #6B4A5E; --plum-soft: #9A7B8D; --line: #F2DCE5;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: Nunito, system-ui, sans-serif; font-weight: 600;
+    color: var(--plum); line-height: 1.5;
+    background: var(--cream);
+    background-image:
+      radial-gradient(circle at 12% 8%, var(--pink-soft) 0 120px, transparent 121px),
+      radial-gradient(circle at 92% 22%, var(--lav-soft) 0 90px, transparent 91px),
+      radial-gradient(circle at 6% 62%, #E6FAF1 0 70px, transparent 71px);
+    min-height: 100vh;
+  }
+  main { max-width: 440px; margin: 0 auto; padding: 28px 16px 48px; }
+  h1, h2, .btn, .num { font-family: Fredoka, Nunito, sans-serif; }
+
+  .hero { text-align: center; }
+  .mochi { width: 132px; height: 132px; display: block; margin: 0 auto -4px; animation: bob 3s ease-in-out infinite; }
+  @keyframes bob { 50% { transform: translateY(-8px); } }
+  .word { font-size: 46px; font-weight: 700; line-height: 1; letter-spacing: -0.5px; }
+  .word span { color: var(--pink-deep); }
+  .tag { margin-top: 8px; color: var(--plum-soft); font-size: 16px; }
+  .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 14px; }
+  .chip { font-size: 13px; font-weight: 800; padding: 4px 12px; border-radius: 999px; background: var(--white); box-shadow: 0 2px 10px rgba(107,74,94,.08); }
+
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin: 26px 0 8px; height: 68px; border-radius: 999px;
+    background: var(--pink-deep); color: var(--white); text-decoration: none;
+    font-size: 23px; font-weight: 600;
+    box-shadow: 0 10px 28px rgba(255,143,191,.45), inset 0 -5px 0 rgba(214,90,145,.35);
+    transition: transform .12s;
+  }
+  .btn:active { transform: scale(.96); }
+  .btn svg { width: 26px; height: 26px; }
+  .meta { text-align: center; font-size: 13px; color: var(--plum-soft); }
+
+  .ios { display: none; margin-top: 18px; padding: 14px 16px; border-radius: 20px; background: var(--butter); font-size: 15px; text-align: center; }
+  .is-ios .ios { display: block; }
+
+  h2 { font-size: 24px; font-weight: 600; margin: 36px 0 14px; text-align: center; }
+  .steps { list-style: none; padding: 0; display: grid; gap: 12px; }
+  .step {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 16px; border-radius: 24px; background: var(--white);
+    box-shadow: 0 4px 16px rgba(107,74,94,.08);
+  }
+  .num {
+    flex: none; width: 40px; height: 40px; border-radius: 50%;
+    display: grid; place-items: center; font-size: 20px; font-weight: 700;
+  }
+  .step:nth-child(1) .num { background: var(--pink-soft); }
+  .step:nth-child(2) .num { background: var(--lav-soft); }
+  .step:nth-child(3) .num { background: #E6FAF1; }
+  .step:nth-child(4) .num { background: #FFF8D6; }
+  .step b { display: block; font-size: 17px; font-weight: 800; }
+  .step p { font-size: 15px; color: var(--plum-soft); }
+  .pill { display: inline-block; padding: 0 8px; border-radius: 8px; background: var(--pink-soft); color: var(--plum); font-weight: 800; white-space: nowrap; }
+
+  .faq { display: grid; gap: 10px; }
+  details { border-radius: 20px; background: var(--white); padding: 14px 16px; box-shadow: 0 4px 16px rgba(107,74,94,.06); }
+  summary { cursor: pointer; font-weight: 800; font-size: 16px; list-style: none; display: flex; justify-content: space-between; gap: 10px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; font-family: Fredoka, sans-serif; color: var(--pink-deep); font-size: 20px; line-height: 1; }
+  details[open] summary::after { content: "–"; }
+  details p { margin-top: 8px; color: var(--plum-soft); font-size: 15px; }
+
+  footer { text-align: center; margin-top: 36px; color: var(--plum-soft); font-size: 14px; }
+  @media (prefers-reduced-motion: reduce) { .mochi { animation: none; } }
+</style>
+</head>
+<body>
+<main>
+  <section class="hero">
+    <svg class="mochi" viewBox="0 0 120 120" aria-hidden="true">
+      <g transform="rotate(-10 44 52)"><rect x="34" y="6" width="20" height="52" rx="10" fill="#fff" stroke="#6B4A5E" stroke-width="3"/><rect x="39.5" y="14" width="9" height="34" rx="4.5" fill="#FFB7D5"/></g>
+      <g transform="rotate(12 76 52)"><rect x="66" y="6" width="20" height="52" rx="10" fill="#fff" stroke="#6B4A5E" stroke-width="3"/><rect x="71.5" y="14" width="9" height="34" rx="4.5" fill="#FFB7D5"/></g>
+      <ellipse cx="60" cy="111" rx="30" ry="4.5" fill="#6B4A5E" opacity=".08"/>
+      <ellipse cx="60" cy="75" rx="40" ry="33" fill="#fff" stroke="#6B4A5E" stroke-width="3"/>
+      <ellipse cx="46" cy="70" rx="4.2" ry="5" fill="#6B4A5E"/><circle cx="47.6" cy="68" r="1.5" fill="#fff"/>
+      <path d="M68 71q6-6 12 0" stroke="#6B4A5E" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <ellipse cx="35" cy="82" rx="7" ry="4.5" fill="#FFB7D5" opacity=".9"/><ellipse cx="85" cy="82" rx="7" ry="4.5" fill="#FFB7D5" opacity=".9"/>
+      <path d="M54 80q3 4 6 0q3 4 6 0" stroke="#6B4A5E" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M86 34q2 7 9 9q-7 2-9 9q-2-7-9-9q7-2 9-9z" fill="#FFE07A" stroke="#6B4A5E" stroke-width="2" stroke-linejoin="round"/>
+    </svg>
+    <h1 class="word">mochi<span>cam</span></h1>
+    <p class="tag">the kawaii photobooth in your pocket ♡</p>
+    <div class="chips">
+      <span class="chip">📸 4-cut strips</span>
+      <span class="chip">🍓 cute filters</span>
+      <span class="chip">🐰 bunny frames</span>
+    </div>
+
+    <a class="btn" href="https://github.com/mahnoor986/MochiCam/releases/latest/download/MochiCam.apk">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/></svg>
+      get mochicam ✨
+    </a>
+    <p class="meta">android only · free · no account needed</p>
+    <p class="ios">📱 bestie you're on an iPhone… this one's android-only for now, sorry ♡</p>
+  </section>
+
+  <h2>install in 1 min, no cap ⏱️</h2>
+  <ol class="steps">
+    <li class="step"><span class="num">1</span><div><b>tap the pink button</b><p>the app downloads. chrome might ask "download anyway?" → tap <span class="pill">Download</span></p></div></li>
+    <li class="step"><span class="num">2</span><div><b>open the file</b><p>tap <span class="pill">Open</span> on the pop-up, or find <span class="pill">MochiCam.apk</span> in your notifications / Downloads</p></div></li>
+    <li class="step"><span class="num">3</span><div><b>let it in</b><p>phone says "not allowed from this source"? → <span class="pill">Settings</span> → turn on <span class="pill">Allow from this source</span> → go back</p></div></li>
+    <li class="step"><span class="num">4</span><div><b>hit install</b><p>if a Play Protect warning pops up → <span class="pill">More details</span> → <span class="pill">Install anyway</span>. done, go serve 💅</p></div></li>
+  </ol>
+
+  <h2>lowkey questions 🤔</h2>
+  <div class="faq">
+    <details><summary>is this safe fr?</summary><p>yes! android just warns you about every app that isn't from the Play Store. mochicam is made by your bestie and only uses your camera to take pics. no ads, no accounts, nothing creepy.</p></details>
+    <details><summary>why isn't it on the Play Store?</summary><p>it's a small passion project made for friends ♡ the Play Store is a whole thing, so we skipped it.</p></details>
+    <details><summary>how do i update it?</summary><p>same link, always the newest version. just download + install again over the old one, and all your pics stay.</p></details>
+    <details><summary>it says "App not installed" 😭</summary><p>make sure the download finished all the way, then try again. still stuck? delete the old mochicam first and install fresh (heads up: that removes pics saved only inside the app, the ones in your MochiCam album stay).</p></details>
+    <details><summary>where do my pics go?</summary><p>inside the app's cute gallery, and a copy in a "MochiCam" album in your phone's photos.</p></details>
+  </div>
+
+  <footer>made with ♡ by your bestie · say cheese 🧀</footer>
+</main>
+<script>
+  try { if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) document.body.classList.add('is-ios'); } catch (e) {}
+</script>
+</body>
+</html>

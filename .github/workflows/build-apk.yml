@@ -1,0 +1,83 @@
+# Builds an installable MochiCam APK on GitHub's computers and publishes it as a release.
+# Friends always download the newest one from:
+#   https://github.com/mahnoor986/MochiCam/releases/latest/download/MochiCam.apk
+#
+# It runs by itself whenever app code is pushed to main, and you can also start it by hand:
+# Actions tab → "Build APK" → Run workflow. A build takes about 15–20 minutes.
+
+name: Build APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - 'design/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-apk
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Install packages
+        run: npm ci
+
+      # every build gets a higher version number, so a new APK installs over the old one
+      # and friends keep their photos
+      - name: Set version number
+        run: |
+          node -e "
+            const fs = require('fs');
+            const app = JSON.parse(fs.readFileSync('app.json', 'utf8'));
+            app.expo.android.versionCode = ${{ github.run_number }};
+            fs.writeFileSync('app.json', JSON.stringify(app, null, 2));
+          "
+
+      - name: Generate the Android project
+        run: npx expo prebuild --platform android --no-install --clean
+        env:
+          CI: 1
+
+      # arm64 only: covers practically every Android phone from the last 7+ years and
+      # keeps the download about half the size of an all-phones APK
+      - name: Build the APK
+        working-directory: android
+        run: ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a --no-daemon
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp android/app/build/outputs/apk/release/app-release.apk MochiCam.apk
+          SIZE=$(du -m MochiCam.apk | cut -f1)
+          gh release create "build-${{ github.run_number }}" MochiCam.apk \
+            --title "MochiCam ♡ build ${{ github.run_number }}" \
+            --latest \
+            --notes "Download **MochiCam.apk** below and tap it on your Android phone to install (about ${SIZE} MB).
+
+          Already have MochiCam? Installing this one updates it, and your photos stay.
+
+          Friend-friendly download page: https://mahnoor986.github.io/MochiCam/"
