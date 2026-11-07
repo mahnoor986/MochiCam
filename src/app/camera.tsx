@@ -2,9 +2,9 @@
 import { CameraView, useCameraPermissions, type CameraType } from 'expo-camera';
 import { router, useFocusEffect } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Image, Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
-import Animated, { ZoomIn } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming, ZoomIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Countdown } from '@/components/Countdown';
@@ -27,6 +27,19 @@ import { color, motion, radius, shadow, springEase, type, useLayout } from '@/th
 const TIMERS = [3, 5, 10, 0];
 const CHIP_GAP = 6;
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+/** 4-cut progress dot: fills white and grows a little once its shot is taken */
+function Dot({ on }: { on: boolean }) {
+  const v = useSharedValue(on ? 1 : 0);
+  useEffect(() => {
+    v.value = withTiming(on ? 1 : 0, { duration: 350, easing: springEase });
+  }, [on, v]);
+  const style = useAnimatedStyle(() => ({
+    opacity: 0.45 + 0.55 * Math.min(1, v.value),
+    transform: [{ scale: 1 + 0.25 * v.value }],
+  }));
+  return <Animated.View style={[styles.dot, style]} />;
+}
 
 function NoCamera({ canAsk, ask }: { canAsk: boolean; ask: () => void }) {
   const insets = useSafeAreaInsets();
@@ -62,6 +75,7 @@ export default function Camera() {
   const [busy, setBusy] = useState(false);
   const [cd, setCd] = useState<string | null>(null);
   const [shot, setShot] = useState(0);
+  const [done, setDone] = useState(0);
   const [sheetH, setSheetH] = useState(260);
 
   // every capture run gets a token; leaving the screen bumps it, which cancels any countdown in flight
@@ -76,6 +90,7 @@ export default function Camera() {
         setFocused(false);
         setBusy(false);
         setCd(null);
+        setDone(0);
       };
     }, []),
   );
@@ -99,44 +114,92 @@ export default function Camera() {
     return alive(t);
   }
 
+  /** countdown → flash → shutter. null when the run was cancelled */
+  async function snap(t: number) {
+    if (!(await countdown(timer, t))) return null;
+    setShot((n) => n + 1);
+    await wait(flash ? 260 : 160);
+    if (!alive(t)) return null;
+    return (await cam.current?.takePictureAsync({ quality: 0.92 })) ?? null;
+  }
+
+  async function bake(picUri: string, id: string) {
+    const uri = await bakePhoto(picUri, filter.id, id);
+    if (uri !== picUri) removeFile(picUri);
+    return uri;
+  }
+
+  async function captureSingle(t: number) {
+    const pic = await snap(t);
+    if (!pic) return;
+    // from here on the photo exists, so finish saving it even if the screen is left
+    const id = newId();
+    const uri = await bake(pic.uri, id);
+    const assetId = await saveToAlbum(uri);
+    app.addItem({
+      id,
+      type: 'photo',
+      uri,
+      assetId,
+      filter: filter.id,
+      frame: null,
+      caption: '',
+      showDate: false,
+      showCaption: false,
+      createdAt: Date.now(),
+    });
+    if (!alive(t)) return;
+    toast('saved to your gallery!');
+    setTimeout(() => {
+      if (alive(t)) toast('one more? ✨', 1500);
+    }, 2300);
+  }
+
+  async function captureStrip(t: number) {
+    const id = newId();
+    const shots: string[] = [];
+    setDone(0);
+    try {
+      for (let i = 0; i < 4; i++) {
+        const pic = await snap(t);
+        if (!pic) return; // cancelled: the finally below tidies up
+        shots.push(await bake(pic.uri, `${id}-${i + 1}`));
+        setDone(i + 1);
+        if (i < 3) {
+          toast(`${i + 1}/4 · next pose! ✨`, 1100);
+          await wait(900);
+        }
+      }
+    } finally {
+      if (shots.length < 4) shots.forEach(removeFile);
+    }
+
+    // the strip image itself is exported (and saved to the album) by the strip screen
+    app.addItem({
+      id,
+      type: 'strip',
+      uri: '',
+      assetId: null,
+      filter: filter.id,
+      frame: 'hearts',
+      caption: `${app.name || 'bestie'}'s bestie day ♡`,
+      showDate: true,
+      showCaption: true,
+      createdAt: Date.now(),
+      shots,
+    });
+    if (!alive(t)) return;
+    toast('strip time! ✨');
+    await wait(1100);
+    if (alive(t)) router.replace({ pathname: '/strip/[id]', params: { id } });
+  }
+
   async function capture() {
     if (busy || !ready) return;
-    if (four) {
-      toast('4-cut strips arrive in step 4 ♡');
-      return;
-    }
     const t = ++run.current;
     setBusy(true);
     try {
-      if (!(await countdown(timer, t))) return;
-      setShot((n) => n + 1);
-      await wait(flash ? 260 : 160);
-      if (!alive(t)) return;
-      const pic = await cam.current?.takePictureAsync({ quality: 0.92 });
-      if (!pic) return;
-
-      // from here on the photo exists, so finish saving it even if the screen is left
-      const id = newId();
-      const uri = await bakePhoto(pic.uri, filter.id, id);
-      if (uri !== pic.uri) removeFile(pic.uri);
-      const assetId = await saveToAlbum(uri);
-      app.addItem({
-        id,
-        type: 'photo',
-        uri,
-        assetId,
-        filter: filter.id,
-        frame: null,
-        caption: '',
-        showDate: false,
-        showCaption: false,
-        createdAt: Date.now(),
-      });
-      if (!alive(t)) return;
-      toast('saved to your gallery!');
-      setTimeout(() => {
-        if (alive(t)) toast('one more? ✨', 1500);
-      }, 2300);
+      await (four ? captureStrip(t) : captureSingle(t));
     } catch (e) {
       console.warn('[mochicam] capture failed', e);
       if (alive(t)) toast('oops! try again ♡');
@@ -229,10 +292,10 @@ export default function Camera() {
           <>
             <View style={styles.dots}>
               {[0, 1, 2, 3].map((i) => (
-                <View key={i} style={styles.dot} />
+                <Dot key={i} on={i < done} />
               ))}
             </View>
-            <Text style={styles.modePillText}>0/4</Text>
+            <Text style={styles.modePillText}>{done}/4</Text>
           </>
         )}
       </View>
@@ -326,7 +389,7 @@ const styles = StyleSheet.create({
   },
   modePillText: { ...type.heading, fontSize: 14, lineHeight: 18, color: color.white, includeFontPadding: false },
   dots: { flexDirection: 'row', gap: 5 },
-  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.45)' },
+  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: color.white },
   sheet: {
     position: 'absolute',
     left: 0,

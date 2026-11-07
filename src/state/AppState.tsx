@@ -16,6 +16,8 @@ type AppState = Stored & {
   setMode: (mode: BoothMode) => void;
   /** newest first */
   addItem: (item: GalleryItem) => void;
+  updateItem: (id: string, patch: Partial<GalleryItem>) => void;
+  removeItem: (id: string) => void;
 };
 
 const Ctx = createContext<AppState | null>(null);
@@ -54,9 +56,17 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     setData((d) => ({ ...d, gallery: [item, ...d.gallery] }));
   }, []);
 
+  const updateItem = useCallback((id: string, patch: Partial<GalleryItem>) => {
+    setData((d) => ({ ...d, gallery: d.gallery.map((g) => (g.id === id ? { ...g, ...patch } : g)) }));
+  }, []);
+
+  const removeItem = useCallback((id: string) => {
+    setData((d) => ({ ...d, gallery: d.gallery.filter((g) => g.id !== id) }));
+  }, []);
+
   const value = useMemo(
-    () => ({ ...data, ready, setName, setMode, addItem }),
-    [data, ready, setName, setMode, addItem],
+    () => ({ ...data, ready, setName, setMode, addItem, updateItem, removeItem }),
+    [data, ready, setName, setMode, addItem, updateItem, removeItem],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

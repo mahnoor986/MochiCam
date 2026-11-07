@@ -22,6 +22,16 @@ export function removeFile(uri: string) {
   }
 }
 
+/** best effort: removes our copy from the device album */
+export async function deleteFromAlbum(assetId: string | null) {
+  if (!assetId) return;
+  try {
+    await new Asset(assetId).delete();
+  } catch (e) {
+    console.warn('[mochicam] could not delete from the album', e);
+  }
+}
+
 /**
  * copies a photo into the device "MochiCam" album. returns the asset id, or null when the
  * library isn't available (web preview, permission revoked, expo go limits) — the in-app copy still exists.
