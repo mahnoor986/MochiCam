@@ -27,6 +27,14 @@ function Pop({ text, small }: { text: string; small: boolean }) {
 
   return (
     <Animated.View style={style}>
+      {/* react native allows one text shadow per text, so the soft pink glow is a second copy underneath */}
+      <Text
+        style={[styles.cd, styles.glow, small && styles.small, small && styles.glowSmall]}
+        importantForAccessibility="no"
+        accessibilityElementsHidden
+      >
+        {text}
+      </Text>
       <Text style={[styles.cd, small && styles.small]} accessibilityLiveRegion="assertive">
         {text}
       </Text>
@@ -55,4 +63,14 @@ const styles = StyleSheet.create({
     textShadowRadius: 1,
   },
   small: { fontSize: 64, lineHeight: 72, textShadowOffset: { width: 0, height: 4 } },
+  // prototype: 0 0 50px rgba(255,143,191,.75) (30px on "say cheese")
+  glow: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    textShadowColor: 'rgba(255,143,191,0.75)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 25,
+  },
+  glowSmall: { textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 15 },
 });

@@ -46,9 +46,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   solid: { backgroundColor: color.white, boxShadow: shadow.soft },
+  // frosted glass without a real blur (android can't blur the camera preview surface):
+  // a light top-to-bottom sheen over the prototype's 26% white, plus its 1dp white ring
   glass: {
-    backgroundColor: 'rgba(255,255,255,0.26)',
-    boxShadow: 'inset 0px 0px 0px 1px rgba(255,255,255,0.45)',
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    backgroundImage: 'linear-gradient(160deg, rgba(255,255,255,0.34), rgba(255,255,255,0.12))',
+    boxShadow: 'inset 0px 0px 0px 1px rgba(255,255,255,0.45), 0px 2px 10px rgba(58,42,53,0.18)',
   },
   tag: {
     ...type.micro,

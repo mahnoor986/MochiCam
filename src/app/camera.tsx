@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Countdown } from '@/components/Countdown';
 import { CHIP_WIDTH, FilterChip } from '@/components/FilterChip';
 import { FlashOverlay } from '@/components/FlashOverlay';
+import { FLIP_IN_MS, FlipCover } from '@/components/FlipCover';
 import { useHearts } from '@/components/FloatingHearts';
 import { Heart } from '@/components/Heart';
 import { Icon } from '@/components/Icon';
@@ -19,6 +20,7 @@ import { PillButton } from '@/components/PillButton';
 import { ShutterButton } from '@/components/ShutterButton';
 import { Squishable } from '@/components/Squishable';
 import { useToast } from '@/components/Toast';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { bakePhoto } from '@/lib/bake';
 import { newId, removeFile, saveToAlbum } from '@/lib/files';
 import { FILTERS, filterById, tintStyle } from '@/lib/filters';
@@ -88,6 +90,9 @@ export default function Camera() {
   const [cd, setCd] = useState<string | null>(null);
   const [shot, setShot] = useState(0);
   const [done, setDone] = useState(0);
+  const [flips, setFlips] = useState(0);
+  const flipping = useRef(false);
+  const reduced = useReducedMotion();
   const [sheetH, setSheetH] = useState(260);
 
   // every capture run gets a token; leaving the screen bumps it, which cancels any countdown in flight
@@ -230,10 +235,20 @@ export default function Camera() {
   }
 
   const flip = () => {
-    if (busy) return;
+    if (busy || flipping.current) return;
     const next = facing === 'front' ? 'back' : 'front';
-    setFacing(next);
     toast(next === 'front' ? 'selfie camera' : 'back camera', 1200);
+    if (reduced) {
+      setFacing(next);
+      return;
+    }
+    // switch once the cover is fully over the preview
+    flipping.current = true;
+    setFlips((n) => n + 1);
+    setTimeout(() => {
+      setFacing(next);
+      flipping.current = false;
+    }, FLIP_IN_MS);
   };
   const cycleTimer = () => {
     const next = TIMERS[(TIMERS.indexOf(timer) + 1) % TIMERS.length];
@@ -276,6 +291,7 @@ export default function Camera() {
         />
       )}
       <View pointerEvents="none" style={[StyleSheet.absoluteFill, tintStyle(filter.previewTint ?? filter.tint)]} />
+      <FlipCover flips={flips} />
 
       <View pointerEvents="none" style={styles.guides}>
         <View style={[styles.corner, styles.tl]} />
@@ -404,8 +420,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: 'rgba(255,255,255,0.3)',
-    boxShadow: 'inset 0px 0px 0px 1px rgba(255,255,255,0.4)',
+    backgroundColor: 'rgba(255,255,255,0.24)',
+    backgroundImage: 'linear-gradient(160deg, rgba(255,255,255,0.36), rgba(255,255,255,0.14))',
+    boxShadow: 'inset 0px 0px 0px 1px rgba(255,255,255,0.4), 0px 2px 10px rgba(58,42,53,0.18)',
   },
   modePillText: { ...type.heading, fontSize: 14, lineHeight: 18, color: color.white, includeFontPadding: false },
   dots: { flexDirection: 'row', gap: 5 },
