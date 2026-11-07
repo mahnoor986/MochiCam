@@ -2,7 +2,7 @@
 import { useCameraPermissions } from 'expo-camera';
 import { router } from 'expo-router';
 import { useEffect } from 'react';
-import { AppState, Linking, StyleSheet, Text, View } from 'react-native';
+import { AppState, Linking, Platform, StyleSheet, Text, View } from 'react-native';
 import Animated, { ZoomIn } from 'react-native-reanimated';
 
 import { Icon, type IconName } from '@/components/Icon';
@@ -79,7 +79,8 @@ export default function Permissions() {
     return () => sub.remove();
   }, [getCam, getLib]);
 
-  const ready = !!cam?.granted && !!lib?.granted;
+  // the laptop web preview can't grant photo access (no media library in a browser), so let it through
+  const ready = Platform.OS === 'web' || (!!cam?.granted && !!lib?.granted);
 
   return (
     <Screen style={styles.screen} top={24} bottom={16}>
