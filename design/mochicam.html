@@ -1,0 +1,1316 @@
+<title>MochiCam</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* layout: one live phone with a control rail, then a size-comparison row, then a developer token sheet. single pastel look on purpose. */
+:root{
+  --pink:#FFB7D5; --pink-deep:#FF8FBF; --pink-soft:#FFE4EF;
+  --cream:#FFF6F0; --white:#FFFFFF;
+  --mint:#B8F0D8; --mint-deep:#7FDDB5;
+  --lav:#D9C6FF; --lav-deep:#B89BFF; --lav-soft:#F1EAFF;
+  --butter:#FFF1A8; --butter-deep:#FFE07A;
+  --plum:#6B4A5E; --plum-2:#9A7B8D; --line:#F2DCE5;
+  --bezel:#3B2A35;
+  --glow:0 10px 28px rgba(255,143,191,.38);
+  --soft:0 4px 16px rgba(107,74,94,.10);
+  --lift:0 14px 34px rgba(107,74,94,.16);
+  --lip:inset 0 -4px 0 rgba(255,120,175,.35);
+  --spring:cubic-bezier(.34,1.56,.64,1);
+  --f-head:'Fredoka','Nunito',ui-rounded,system-ui,sans-serif;
+  --f-body:'Nunito',ui-rounded,system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--cream);color:var(--plum);font-family:var(--f-body);font-weight:600;font-size:15px;line-height:22px;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:0}
+:focus-visible{outline:3px solid var(--pink-deep);outline-offset:2px;border-radius:12px}
+
+/* ---------- page shell ---------- */
+.page{max-width:1180px;margin:0 auto;padding-block:28px 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:56px}
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 32px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand b{display:block;font:700 34px/38px var(--f-head);letter-spacing:-.01em}
+.brand b span{color:var(--pink-deep)}
+.brand small{display:block;font:800 12px/16px var(--f-body);letter-spacing:.06em;color:var(--plum-2);text-transform:uppercase}
+.lede{max-width:46ch;margin:0;color:var(--plum-2)}
+.stage{display:grid;grid-template-columns:minmax(0,452px) minmax(0,330px);gap:40px;justify-content:center;align-items:start}
+.phone-col{display:flex;flex-direction:column;align-items:center;gap:12px;min-width:0;width:100%}
+.dev-label{margin:0;font:800 12px/16px var(--f-body);letter-spacing:.06em;color:var(--plum-2);text-transform:uppercase;font-variant-numeric:tabular-nums}
+.fit{position:relative}
+.fit>.phone{position:absolute;left:0;top:0;transform-origin:0 0}
+.panel{display:flex;flex-direction:column;gap:16px;position:sticky;top:max(16px,env(safe-area-inset-top,0px))}
+.pcard{background:var(--white);border-radius:24px;box-shadow:var(--soft);padding:18px;display:flex;flex-direction:column;gap:12px}
+.pcard h2{margin:0;font:600 18px/22px var(--f-head)}
+.pcard p{margin:0;font-size:13px;line-height:18px;color:var(--plum-2)}
+.jump{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.jump button{width:100%;display:flex;align-items:center;gap:8px;padding:7px 10px 7px 7px;border-radius:999px;font-weight:700;font-size:14px;text-align:left;transition:background .2s,transform .28s var(--spring)}
+.jump button:hover{background:var(--pink-soft)}
+.jump button:active{transform:scale(.94);transition-duration:.08s}
+.jump b{flex:0 0 26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--pink-soft);font:600 13px/1 var(--f-head);font-variant-numeric:tabular-nums}
+.jump button[aria-current="true"]{background:var(--pink)}
+.jump button[aria-current="true"] b{background:var(--white)}
+.wseg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--pink-soft);border-radius:999px;padding:4px;gap:4px}
+.wseg button{height:38px;border-radius:999px;font:600 15px/1 var(--f-head);font-variant-numeric:tabular-nums;transition:background .2s,transform .28s var(--spring)}
+.wseg button:active{transform:scale(.92)}
+.wseg button[aria-pressed="true"]{background:var(--white);box-shadow:var(--soft)}
+.prow{display:flex;flex-wrap:wrap;gap:8px}
+.pbtn{height:40px;padding:0 16px;border-radius:999px;background:var(--lav-soft);font:600 15px/1 var(--f-head);transition:transform .28s var(--spring)}
+.pbtn:active{transform:scale(.92);transition-duration:.08s}
+.tips{margin:0;padding-left:18px;font-size:13px;line-height:20px;color:var(--plum-2)}
+.sec-head{display:flex;flex-direction:column;gap:6px;max-width:62ch}
+.sec-head h2{margin:0;font:600 28px/32px var(--f-head);text-wrap:balance}
+.sec-head p{margin:0;color:var(--plum-2)}
+.compare{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px 20px;margin-top:22px}
+.compare figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0}
+.compare .fitwrap{width:100%;display:flex;justify-content:center}
+.compare figcaption{font:800 12px/16px var(--f-body);letter-spacing:.05em;text-transform:uppercase;color:var(--plum-2);text-align:center;font-variant-numeric:tabular-nums}
+.compare figcaption b{color:var(--plum)}
+.compare .phone{pointer-events:none}
+
+/* ---------- phone frame ---------- */
+.phone{width:calc(var(--w) + 20px);height:calc(var(--h) + 20px);padding:10px;border-radius:52px;background:var(--bezel);box-shadow:var(--lift),0 30px 60px -20px rgba(107,74,94,.35),inset 0 0 0 2px rgba(255,255,255,.08)}
+.phone::before,.phone::after{content:"";position:absolute;right:-3px;width:4px;border-radius:0 3px 3px 0;background:var(--bezel)}
+.phone::before{top:170px;height:72px}
+.phone::after{top:268px;height:46px}
+.scr{position:relative;width:var(--w);height:var(--h);border-radius:42px;overflow:hidden;background:var(--cream);container-type:inline-size;--gx:clamp(16px,5cqw,22px);isolation:isolate}
+.screen-host{position:absolute;inset:0}
+.sbar{position:absolute;left:0;right:0;top:0;height:32px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:20;color:var(--plum);font:600 13px/1 system-ui,sans-serif;pointer-events:none;font-variant-numeric:tabular-nums}
+.sb-hole{position:absolute;left:50%;top:10px;width:13px;height:13px;margin-left:-6.5px;border-radius:50%;background:#1d1419;box-shadow:0 0 0 2px rgba(0,0,0,.05)}
+.sb-ic{display:flex;gap:5px;align-items:center}
+.nbar{position:absolute;left:0;right:0;bottom:0;height:24px;display:grid;place-items:center;z-index:20;pointer-events:none}
+.nbar i{width:108px;height:4px;border-radius:4px;background:var(--plum);opacity:.38}
+.scr.dark .sbar{color:var(--white)}
+.scr.dark .nbar i{background:var(--white);opacity:.8}
+.layer{position:absolute;inset:0;z-index:15;pointer-events:none}
+.over{position:absolute;inset:0;pointer-events:auto}
+.over:empty{display:none}
+.fx{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+
+/* ---------- app primitives ---------- */
+.scr button{transition:transform .28s var(--spring),background-color .2s,box-shadow .2s,opacity .2s}
+.scr button:active:not(:disabled){transform:scale(.92);transition-duration:.08s}
+.t-display{font:700 44px/48px var(--f-head);letter-spacing:-.01em;margin:0}
+.t-title{font:600 28px/32px var(--f-head);margin:0;text-wrap:balance}
+.t-head{font:600 20px/24px var(--f-head);margin:0}
+.t-body{font:600 15px/22px var(--f-body);margin:0}
+.t-cap{font:700 13px/18px var(--f-body);margin:0}
+.t-micro{font:800 11px/14px var(--f-body)}
+.sub{color:var(--plum-2)}
+.grow{flex:1}
+.btn{height:60px;width:100%;border-radius:999px;background:var(--pink);color:var(--plum);font:600 19px/1 var(--f-head);display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:var(--glow),var(--lip);flex-shrink:0}
+.btn-xl{height:72px;font-size:22px}
+.btn:disabled{background:#F3E6EC;color:rgba(154,123,141,.7);box-shadow:none;cursor:default}
+.btn-2{background:var(--lav);box-shadow:0 6px 18px rgba(184,155,255,.35),inset 0 -4px 0 rgba(150,120,220,.22)}
+.btn-ghost{background:var(--white);box-shadow:var(--soft),inset 0 0 0 2px var(--line)}
+.btn-sm{height:38px;padding:0 18px;border-radius:999px;background:var(--white);font:600 15px/1 var(--f-head);box-shadow:var(--soft),inset 0 -3px 0 rgba(107,74,94,.08);flex-shrink:0}
+.ibtn{width:44px;height:44px;border-radius:50%;background:var(--white);display:grid;place-items:center;box-shadow:var(--soft);flex-shrink:0;position:relative}
+.ibtn.glass{background:rgba(255,255,255,.26);color:var(--white);box-shadow:inset 0 0 0 1px rgba(255,255,255,.45);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.ibtn .tag{position:absolute;right:-5px;bottom:-4px;min-width:22px;height:18px;padding:0 5px;border-radius:999px;background:var(--butter);color:var(--plum);font:800 10px/18px var(--f-body);text-align:center}
+.card{background:var(--white);border-radius:24px;box-shadow:var(--soft)}
+.badge{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 12px;border-radius:999px;background:var(--mint);font:800 12px/1 var(--f-body);white-space:nowrap;animation:pop .6s var(--spring) both .25s}
+.hscroll{display:flex;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;-ms-overflow-style:none;cursor:grab}
+.hscroll::-webkit-scrollbar{display:none}
+.hscroll.dragging{scroll-snap-type:none;cursor:grabbing}
+.hscroll>*{scroll-snap-align:start}
+.spark{position:absolute;animation:twinkle 2.6s ease-in-out infinite;pointer-events:none}
+.cloud{position:absolute;pointer-events:none;filter:drop-shadow(0 4px 8px rgba(107,74,94,.08))}
+
+/* mascot */
+.bunny{display:block;overflow:visible}
+.bunny .ear{transform-box:fill-box;transform-origin:50% 100%}
+.bunny.bob{animation:bob 2.4s ease-in-out infinite}
+.bunny.bob .ear-l{animation:wigL 3.6s ease-in-out infinite}
+.bunny.bob .ear-r{animation:wigR 3.6s ease-in-out infinite .2s}
+
+/* placeholder photo */
+.ph{position:relative;width:100%;height:100%;overflow:hidden;background:var(--a)}
+.ph-scene{position:absolute;inset:0;background:
+  radial-gradient(circle at 16% 20%,rgba(255,255,255,.85),transparent 13%),
+  radial-gradient(circle at 84% 16%,var(--c),transparent 18%),
+  radial-gradient(circle at 78% 64%,rgba(255,255,255,.55),transparent 12%),
+  radial-gradient(circle at 10% 78%,var(--c),transparent 16%),
+  linear-gradient(160deg,var(--a),var(--b))}
+.ph-person{position:absolute;left:50%;bottom:calc(var(--py,0%) - 3%);width:64%;max-width:var(--pmax,none);aspect-ratio:1/1.02;transform:translateX(-50%) rotate(var(--tilt,0deg));transform-origin:50% 100%}
+.ph-head,.ph-body{position:absolute;background:rgba(255,255,255,.78);box-shadow:inset 0 -5px 0 rgba(107,74,94,.05)}
+.ph-head{left:50%;top:6%;width:44%;aspect-ratio:1;border-radius:50%;transform:translateX(-50%)}
+.ph-head::before,.ph-head::after{content:"";position:absolute;top:60%;width:17%;height:9%;border-radius:50%;background:var(--pink);opacity:.9}
+.ph-head::before{left:16%}.ph-head::after{right:16%}
+.ph-body{left:6%;right:6%;bottom:0;height:48%;border-radius:50% 50% 10% 10%/80% 80% 8% 8%}
+.pe-ears{position:absolute;left:50%;top:-14%;width:36%;height:30%;transform:translateX(-50%)}
+.pe-ears b{position:absolute;bottom:0;width:30%;height:100%;border-radius:999px;background:var(--white);box-shadow:inset 0 0 0 2px rgba(255,183,213,.9)}
+.pe-ears b:first-child{left:6%;transform:rotate(-12deg)}.pe-ears b:last-child{right:6%;transform:rotate(12deg)}
+.pe-st{position:absolute;width:16%;right:12%;top:12%;transform:rotate(14deg)}
+.pe-st svg{width:100%;height:auto;display:block}
+.ph-tint{position:absolute;inset:0;pointer-events:none;transition:background .35s}
+
+/* photo strip */
+.strip{--sw:156px;position:relative;width:var(--sw);padding:calc(var(--sw)*.075) calc(var(--sw)*.075) calc(var(--sw)*.06);border-radius:calc(var(--sw)*.05);display:flex;flex-direction:column;gap:calc(var(--sw)*.05);box-shadow:var(--lift);flex-shrink:0}
+.strip.f-plain{box-shadow:var(--lift),inset 0 0 0 1px var(--line)}
+.strip-photos{display:flex;flex-direction:column;gap:calc(var(--sw)*.045)}
+.sp{aspect-ratio:4/3;border-radius:calc(var(--sw)*.035);overflow:hidden;box-shadow:0 0 0 calc(var(--sw)*.012 + .5px) rgba(255,255,255,.95)}
+.strip-foot{display:flex;flex-direction:column;align-items:center;gap:calc(var(--sw)*.03);min-height:calc(var(--sw)*.16)}
+.s-cap{max-width:100%;padding:.22em .8em;border-radius:999px;background:rgba(255,255,255,.92);font:600 calc(var(--sw)*.082)/1.2 var(--f-head);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.s-meta{display:flex;align-items:center;gap:.6em;padding:.2em .7em;border-radius:999px;background:rgba(255,255,255,.8);font:800 calc(var(--sw)*.056)/1.3 var(--f-body);letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.s-date{color:var(--pink-deep)}
+.s-ear{position:absolute;top:calc(var(--sw)*-.21);width:calc(var(--sw)*.15);height:calc(var(--sw)*.27);border-radius:999px;background:var(--white);box-shadow:inset 0 0 0 calc(var(--sw)*.012 + 1px) var(--plum)}
+.s-ear::after{content:"";position:absolute;inset:22% 30% 18%;border-radius:999px;background:var(--pink)}
+.s-ear.l{left:24%;transform:rotate(-12deg)}.s-ear.r{right:24%;transform:rotate(12deg)}
+
+/* toast + hearts */
+.toast{position:absolute;left:50%;bottom:var(--tb,104px);display:flex;align-items:center;gap:8px;height:44px;padding:0 18px 0 14px;border-radius:999px;background:var(--white);box-shadow:var(--glow);font:800 14px/1 var(--f-body);white-space:nowrap;opacity:0;transform:translate(-50%,16px) scale(.9);transition:opacity .2s,transform .32s var(--spring)}
+.toast.on{opacity:1;transform:translate(-50%,0) scale(1)}
+.toast svg{flex-shrink:0}
+.fheart{position:absolute;margin:-10px 0 0 -10px;animation:floatUp 1.6s cubic-bezier(.2,.7,.3,1) both;animation-delay:var(--d,0s)}
+.fheart svg{display:block;filter:drop-shadow(0 3px 6px rgba(255,143,191,.4))}
+
+/* ---------- screens ---------- */
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;padding:44px var(--gx) 36px;overflow:hidden;animation:screenIn .34s ease both}
+.scroll{overflow-y:auto;scrollbar-width:none}
+.scroll::-webkit-scrollbar{display:none}
+
+/* splash */
+.s-splash{align-items:center;justify-content:center;background:radial-gradient(circle at 50% 42%,#FFEAF3 0,var(--cream) 62%)}
+.blob{position:absolute;border-radius:42% 58% 63% 37%/41% 44% 56% 59%;animation:morph 9s ease-in-out infinite}
+.bl1{width:62cqw;height:62cqw;left:-18cqw;top:6%;background:var(--pink-soft)}
+.bl2{width:54cqw;height:54cqw;right:-20cqw;top:52%;background:var(--lav-soft);animation-delay:-3s}
+.bl3{width:30cqw;height:30cqw;right:6cqw;top:12%;background:#E6FAF1;animation-delay:-6s}
+.splash-c{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;animation:popIn .8s var(--spring) both}
+.wordmark{font:700 44px/48px var(--f-head);letter-spacing:-.01em;margin-top:10px}
+.wordmark span{color:var(--pink-deep)}
+.tagpill{height:30px;padding:0 14px;border-radius:999px;background:var(--butter);font:800 13px/30px var(--f-body);letter-spacing:.02em}
+.loader{position:absolute;bottom:84px;left:50%;transform:translateX(-50%);display:flex;gap:8px}
+.loader i{width:10px;height:10px;border-radius:50%;background:var(--pink);animation:dots 1.1s ease-in-out infinite}
+.loader i:nth-child(2){animation-delay:.15s;background:var(--lav)}.loader i:nth-child(3){animation-delay:.3s;background:var(--mint)}
+
+/* permissions */
+.s-perms{gap:14px}
+.perm-head{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding-top:12px;position:relative}
+.perm-m{position:relative;margin-bottom:4px}
+.perm-list{display:flex;flex-direction:column;gap:12px;margin-top:10px}
+.perm{display:grid;grid-template-columns:52px minmax(0,1fr) auto;align-items:center;gap:14px;padding:16px;border-radius:24px;box-shadow:var(--soft);position:relative}
+.perm.mint{background:var(--mint)}.perm.lav{background:var(--lav)}
+.perm-ic{width:52px;height:52px;border-radius:16px;background:var(--white);display:grid;place-items:center}
+.perm-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.perm-txt span{font:700 13px/18px var(--f-body);color:var(--plum)}
+.ok-pill{display:inline-flex;align-items:center;gap:4px;height:38px;padding:0 14px;border-radius:999px;background:rgba(255,255,255,.65);font:600 15px/1 var(--f-head);animation:pop .5s var(--spring) both}
+.perm-note{text-align:center;color:var(--plum-2)}
+.perm.denied .btn-sm{background:var(--butter)}
+
+/* name */
+.s-name{gap:16px;align-items:stretch}
+.name-m{display:flex;flex-direction:column;align-items:center;gap:6px}
+.bubble{position:relative;background:var(--white);padding:16px 22px;border-radius:24px;box-shadow:var(--soft);text-align:center;max-width:290px}
+.bubble::after{content:"";position:absolute;left:50%;bottom:-9px;width:20px;height:20px;margin-left:-10px;background:var(--white);border-radius:4px;transform:rotate(45deg)}
+.name-field{position:relative}
+.name-input{width:100%;height:64px;border-radius:999px;border:3px solid var(--line);background:var(--white);padding:0 56px 0 26px;font:600 22px/1 var(--f-head);color:var(--plum);caret-color:var(--pink-deep);outline:none;transition:border-color .2s,box-shadow .2s}
+.name-input::placeholder{color:#C9B2BE}
+.name-input:focus{border-color:var(--pink);box-shadow:0 0 0 6px rgba(255,183,213,.3)}
+.name-heart{position:absolute;right:22px;top:50%;transform:translateY(-50%);animation:beat 1.6s ease-in-out infinite;display:flex}
+.picks{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center}
+.picks .t-cap{color:var(--plum-2)}
+.pick{height:34px;padding:0 14px;border-radius:999px;background:var(--lav-soft);font:700 14px/1 var(--f-body)}
+.name-prev{text-align:center;color:var(--plum-2)}
+.name-prev b{color:var(--plum);font-weight:800}
+
+/* home */
+.s-home{gap:14px}
+.home-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-top:6px}
+.greet{min-width:0}
+.greet .t-title{overflow-wrap:anywhere}
+.hero{flex:1;min-height:190px;position:relative;border-radius:32px;overflow:hidden;background:linear-gradient(160deg,#FFE4EF,#F1EAFF 70%,#E9FBF3);display:flex;align-items:flex-end;justify-content:center}
+.hb{position:absolute;border-radius:42% 58% 63% 37%/41% 44% 56% 59%;animation:morph 10s ease-in-out infinite}
+.hb1{width:62%;aspect-ratio:1;left:19%;bottom:-6%;background:rgba(255,183,213,.55)}
+.hb2{width:30%;aspect-ratio:1;left:-8%;top:-6%;background:rgba(255,241,168,.8);animation-delay:-4s}
+.cloud.c1{left:58%;top:12%;animation:drift 6s ease-in-out infinite}
+.cloud.c2{left:8%;top:44%;animation:drift 7s ease-in-out infinite reverse}
+.hero-m{position:relative;margin-bottom:6%}
+.hero-bubble{position:absolute;left:50%;top:14%;margin-left:-6px;transform:translateX(-90%) rotate(-6deg);background:var(--white);padding:8px 14px;border-radius:999px;font:600 16px/1 var(--f-head);box-shadow:var(--soft);white-space:nowrap;z-index:1}
+.mode{padding:14px 14px 14px 18px;display:flex;flex-direction:column;gap:10px;flex-shrink:0}
+.mode-row{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding-right:4px}
+.mode-hint{color:var(--plum-2);font-style:normal}
+.seg{position:relative;display:grid;grid-template-columns:1fr 1fr;height:52px;padding:5px;border-radius:999px;background:var(--pink-soft)}
+.seg-thumb{position:absolute;top:5px;bottom:5px;left:5px;width:calc(50% - 5px);border-radius:999px;background:var(--white);box-shadow:var(--soft),inset 0 -3px 0 rgba(255,183,213,.5);transition:transform .38s var(--spring)}
+.seg[data-v="four"] .seg-thumb{transform:translateX(100%)}
+.seg button{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:6px;border-radius:999px;font:600 17px/1 var(--f-head);color:var(--plum-2)}
+.seg button[aria-checked="true"]{color:var(--plum)}
+.gal-card{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;padding:12px 16px 12px 14px;text-align:left;flex-shrink:0}
+.gal-thumbs{display:flex;padding-left:4px}
+.gal-thumbs>div{width:44px;height:44px;border-radius:12px;overflow:hidden;border:3px solid var(--white);box-shadow:var(--soft);margin-left:-12px}
+.gal-thumbs>div:nth-child(1){transform:rotate(-8deg);margin-left:0}
+.gal-thumbs>div:nth-child(3){transform:rotate(8deg)}
+.gal-card b{display:block;font:600 18px/22px var(--f-head)}
+.gal-card span{font:700 13px/18px var(--f-body);color:var(--plum-2)}
+.gal-card .chev{width:36px;height:36px;border-radius:50%;background:var(--pink-soft);display:grid;place-items:center}
+
+/* camera */
+.s-cam{padding:0;background:#3a2a35}
+.cam-view{position:absolute;inset:0;transform-style:preserve-3d}
+.cam-view.flip{animation:flipY .55s ease-in-out}
+.cam-view .ph{--py:27%;--pmax:330px}
+.guides{position:absolute;left:12%;right:12%;top:21%;bottom:38%;pointer-events:none}
+.guides i{position:absolute;width:28px;height:28px;border:3px solid rgba(255,255,255,.85);border-radius:4px}
+.guides i:nth-child(1){left:0;top:0;border-right:0;border-bottom:0;border-top-left-radius:16px}
+.guides i:nth-child(2){right:0;top:0;border-left:0;border-bottom:0;border-top-right-radius:16px}
+.guides i:nth-child(3){left:0;bottom:0;border-right:0;border-top:0;border-bottom-left-radius:16px}
+.guides i:nth-child(4){right:0;bottom:0;border-left:0;border-top:0;border-bottom-right-radius:16px}
+.cam-top{position:absolute;top:42px;left:var(--gx);right:var(--gx);display:flex;justify-content:space-between;align-items:center;z-index:2}
+.cam-top-r{display:flex;gap:10px}
+.cam-pill{position:absolute;top:98px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;height:32px;padding:0 14px;border-radius:999px;background:rgba(255,255,255,.3);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:var(--white);font:600 14px/1 var(--f-head);white-space:nowrap;box-shadow:inset 0 0 0 1px rgba(255,255,255,.4);z-index:2;font-variant-numeric:tabular-nums}
+.dots{display:flex;gap:5px}
+.dots i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.45);transition:transform .35s var(--spring),background .2s}
+.dots i.on{background:var(--white);transform:scale(1.25)}
+.countdown{position:absolute;left:0;right:0;top:0;bottom:240px;display:grid;place-items:center;pointer-events:none;z-index:3}
+.cd{font:700 150px/1 var(--f-head);color:var(--white);text-shadow:0 6px 0 var(--pink-deep),0 0 50px rgba(255,143,191,.75);animation:cdPop .72s var(--spring) both}
+.cd.small{font-size:64px;text-shadow:0 4px 0 var(--pink-deep),0 0 30px rgba(255,143,191,.7)}
+.flash-ov{position:absolute;inset:0;background:var(--white);opacity:0;pointer-events:none;z-index:4}
+.flash-ov.go{animation:flash .5s ease-out}
+.flash-ov.go.bright{animation-duration:.8s}
+.cam-sheet{position:absolute;left:0;right:0;bottom:0;padding:12px 0 38px;border-radius:32px 32px 0 0;background:rgba(255,246,240,.93);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 -10px 30px rgba(107,74,94,.14);display:flex;flex-direction:column;gap:6px;z-index:2}
+.f-name{text-align:center;font:600 15px/20px var(--f-head);display:flex;align-items:center;justify-content:center;gap:6px}
+.f-name span{display:inline-block}
+.f-name span.bump{animation:pop .4s var(--spring)}
+.chips{gap:6px;padding:4px var(--gx) 8px}
+.chip{flex:0 0 auto;width:64px;display:flex;flex-direction:column;align-items:center;gap:5px}
+.chip .ring{width:56px;height:56px;border-radius:50%;padding:3px;background:transparent;transition:background .2s,box-shadow .2s}
+.chip .ring>div{width:100%;height:100%;border-radius:50%;overflow:hidden;border:2px solid var(--white)}
+.chip .ring .ph-person{--tilt:0deg}
+.chip span{font:800 11px/13px var(--f-body);text-align:center;color:var(--plum-2)}
+.chip.on .ring{background:var(--pink-deep);box-shadow:var(--glow)}
+.chip.on span{color:var(--plum)}
+.shutter-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:4px var(--gx) 0}
+.thumb{justify-self:start;width:50px;height:50px;border-radius:15px;overflow:hidden;border:3px solid var(--white);box-shadow:var(--soft);background:var(--pink-soft)}
+.thumb.bump{animation:pop .5s var(--spring)}
+.shutter{width:clamp(78px,21cqw,90px);aspect-ratio:1;border-radius:50%;background:var(--white);padding:6px;box-shadow:var(--glow),0 0 0 5px rgba(255,183,213,.5)}
+.shutter span{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFD7E8,var(--pink) 55%,var(--pink-deep));transition:transform .3s var(--spring)}
+.shutter.busy span{animation:throb .9s ease-in-out infinite}
+.mode-mini{justify-self:end;height:44px;padding:0 14px 0 10px;border-radius:999px;background:var(--white);box-shadow:var(--soft);display:flex;align-items:center;gap:4px;font:600 15px/1 var(--f-head)}
+
+/* strip result */
+.s-strip{gap:14px;padding-bottom:34px}
+.bar{display:flex;align-items:center;gap:12px;min-height:48px;flex-shrink:0}
+.bar .t-title{flex:1;min-width:0}
+
+.strip-stage{position:relative;display:grid;place-items:center;padding:32px 0 16px;border-radius:32px;background:linear-gradient(170deg,var(--lav-soft),#FFEFF6);flex-shrink:0;overflow:hidden}
+.strip-stage .strip{--sw:clamp(112px,29cqw,132px);transform:rotate(-2deg);animation:stripIn .7s var(--spring) both}
+.strip-stage .strip.swap{animation:swap .45s var(--spring) both}
+.ctl{padding:14px 0 16px;display:flex;flex-direction:column;gap:10px;flex-shrink:0}
+.ctl-row{display:flex;justify-content:space-between;align-items:baseline;padding:0 16px}
+.ctl-row .t-micro{color:var(--plum-2)}
+.frames{gap:4px;padding:4px 12px 4px}
+.fchip{flex:0 0 auto;width:66px;display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:4px}
+.fchip i{display:block;width:36px;height:52px;border-radius:9px;box-shadow:inset 0 0 0 1.5px rgba(107,74,94,.12);transition:box-shadow .2s}
+.fchip.on i{box-shadow:0 0 0 3px var(--white),0 0 0 6px var(--pink-deep)}
+.fchip span{font:800 11px/13px var(--f-body);color:var(--plum-2);text-align:center}
+.fchip.on span{color:var(--plum)}
+.toggles{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px}
+.tog{display:flex;align-items:center;justify-content:space-between;gap:6px;background:var(--cream);border-radius:16px;padding:8px 8px 8px 12px;font:700 14px/18px var(--f-body)}
+.sw{width:46px;height:28px;border-radius:999px;background:#EBDDE4;position:relative;flex-shrink:0}
+.sw i{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--white);box-shadow:0 2px 4px rgba(107,74,94,.18);transition:transform .32s var(--spring)}
+.sw[aria-checked="true"]{background:var(--pink)}
+.sw[aria-checked="true"] i{transform:translateX(18px)}
+.cap-wrap{padding:0 12px}
+.cap-input{width:100%;height:46px;border-radius:999px;border:2px solid var(--line);background:var(--cream);padding:0 18px;font:600 15px/1 var(--f-body);color:var(--plum);outline:none;caret-color:var(--pink-deep)}
+.cap-input:focus{border-color:var(--pink)}
+.cta-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex-shrink:0}
+
+/* gallery */
+.s-gal{gap:12px}
+.count{height:28px;padding:0 12px;border-radius:999px;background:var(--pink-soft);font:800 12px/28px var(--f-body);white-space:nowrap;font-variant-numeric:tabular-nums}
+.g-sec{font:600 16px/20px var(--f-head);color:var(--plum-2);margin:6px 2px 0}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.cell{aspect-ratio:3/4;border-radius:16px;overflow:hidden;position:relative;box-shadow:var(--soft);display:block;width:100%;background:var(--pink-soft)}
+.cell.is-strip{display:grid;place-items:center;background:linear-gradient(170deg,var(--lav-soft),#FFEFF6)}
+.cell .strip{--sw:clamp(36px,10cqw,44px);box-shadow:0 4px 10px rgba(107,74,94,.18)}
+.cell .strip-foot{min-height:calc(var(--sw)*.14)}
+.cell .strip-foot>*{display:none}
+.cell .tg{position:absolute;left:6px;bottom:6px;height:18px;padding:0 7px;border-radius:999px;background:rgba(255,255,255,.92);font:800 10px/18px var(--f-body)}
+.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding-bottom:40px}
+.empty-m{position:relative;display:grid;place-items:center;width:210px;height:170px}
+.empty-m .cloud{left:0;top:72px}
+.empty-m .bunny{position:relative;margin-top:-16px}
+.zz{position:absolute;right:30px;top:10px;font:600 20px/1 var(--f-head);color:var(--lav-deep);animation:zz 2.4s ease-in-out infinite}
+.empty .btn{width:auto;padding:0 32px;margin-top:10px}
+
+/* overlays */
+.viewer{position:absolute;inset:0;background:rgba(255,246,240,.97);display:flex;flex-direction:column;gap:14px;padding:44px var(--gx) 36px;animation:screenIn .3s ease both}
+.v-top{display:flex;align-items:center;gap:12px}
+.v-top b{display:block;font:600 20px/24px var(--f-head)}
+.v-top span{font:700 13px/18px var(--f-body);color:var(--plum-2)}
+.v-body{flex:1;min-height:0;display:grid;place-items:center}
+.v-photo{width:78%;aspect-ratio:3/4;border-radius:24px;overflow:hidden;box-shadow:var(--lift);transform:rotate(1.5deg);animation:stripIn .6s var(--spring) both}
+.v-body .strip{--sw:clamp(124px,36cqw,156px);animation:stripIn .6s var(--spring) both}
+.v-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.scrim{position:absolute;inset:0;background:rgba(107,74,94,.3);animation:fade .2s ease both}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--white);border-radius:32px 32px 0 0;padding:10px var(--gx) 40px;box-shadow:var(--lift);display:flex;flex-direction:column;gap:14px;animation:sheetUp .42s var(--spring) both}
+.handle{align-self:center;width:40px;height:5px;border-radius:5px;background:var(--line)}
+.sheet .t-head{text-align:center}
+.sheet .t-body{text-align:center;color:var(--plum-2);margin-top:-8px}
+.share-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.share-row button{display:flex;flex-direction:column;align-items:center;gap:6px;font:700 12px/16px var(--f-body)}
+.share-row i{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-style:normal}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sys{position:absolute;left:50%;top:50%;width:min(312px,84%);transform:translate(-50%,-50%);background:#F4EEF3;border-radius:28px;padding:24px 20px 18px;display:flex;flex-direction:column;align-items:center;gap:16px;color:#2A2130;font:400 17px/24px system-ui,sans-serif;text-align:center;animation:sysIn .25s ease-out both;box-shadow:0 20px 50px rgba(40,20,35,.25)}
+.sys .si{color:#7B4F6C}
+.sys p{margin:0}
+.sys-btns{display:flex;flex-direction:column;gap:6px;width:100%}
+.sys-btns button{height:44px;border-radius:22px;background:#EADCE4;font:500 15px/1 system-ui,sans-serif;color:#3B2236}
+.sys-btns button:last-child{background:transparent}
+
+/* ---------- token sheet ---------- */
+.tok-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px;margin-top:22px}
+.tk{grid-column:span 6;background:var(--white);border-radius:24px;box-shadow:var(--soft);padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.tk.full{grid-column:1/-1}
+.tk.third{grid-column:span 4}
+.tk h3{margin:0;font:600 20px/24px var(--f-head);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.tk h3 small{font:800 11px/14px var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--plum-2)}
+.sw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:12px}
+.swatch{display:flex;flex-direction:column;gap:2px;font-size:13px;line-height:18px}
+.swatch i{display:block;height:58px;border-radius:16px;margin-bottom:6px;box-shadow:inset 0 0 0 1px rgba(107,74,94,.08)}
+.swatch b{font-weight:800}
+.swatch code,.mono{font:700 12px/16px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--plum)}
+.swatch span{color:var(--plum-2);font-size:12px}
+.tblwrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px;line-height:18px}
+th{text-align:left;font:800 11px/14px var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--plum-2);padding:0 12px 8px 0;white-space:nowrap}
+td{padding:8px 12px 8px 0;border-top:1px solid var(--line);vertical-align:middle;white-space:nowrap;font-variant-numeric:tabular-nums}
+.r-row{display:flex;flex-wrap:wrap;gap:14px}
+.r-item{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px}
+.r-item i{width:58px;height:58px;background:var(--pink-soft);box-shadow:inset 0 0 0 2px var(--pink)}
+.sp-list{display:flex;flex-direction:column;gap:6px}
+.sp-row{display:grid;grid-template-columns:44px 1fr;align-items:center;gap:10px;font-size:12px}
+.sp-row i{display:block;height:12px;border-radius:4px;background:var(--lav)}
+.sh-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.sh-item{display:flex;flex-direction:column;gap:8px;font-size:12px;line-height:16px}
+.sh-item i{display:block;height:56px;border-radius:18px;background:var(--white)}
+.mo-list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;font-size:13px;line-height:19px}
+.mo-list b{font-weight:800}
+.comp{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.comp-item{border-radius:20px;background:var(--cream);padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.comp-demo{min-height:76px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.comp-item h4{margin:0;font:600 16px/20px var(--f-head)}
+.comp-item p{margin:0;font-size:12px;line-height:18px;color:var(--plum-2)}
+.demo-toast{position:static;opacity:1;transform:none}
+pre{margin:0;background:#3B2A35;color:#FFE9F2;border-radius:18px;padding:18px;overflow-x:auto;font:600 12.5px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace}
+.code-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.code-head p{margin:0;font-size:13px;color:var(--plum-2);max-width:60ch}
+
+/* ---------- motion ---------- */
+@keyframes screenIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes wigL{0%,78%,100%{transform:rotate(0)}84%{transform:rotate(-12deg)}92%{transform:rotate(5deg)}}
+@keyframes wigR{0%,80%,100%{transform:rotate(0)}86%{transform:rotate(12deg)}94%{transform:rotate(-4deg)}}
+@keyframes twinkle{0%,100%{opacity:.35;transform:scale(.6) rotate(0)}50%{opacity:1;transform:scale(1) rotate(25deg)}}
+@keyframes morph{0%,100%{border-radius:42% 58% 63% 37%/41% 44% 56% 59%}50%{border-radius:58% 42% 38% 62%/55% 60% 40% 45%}}
+@keyframes popIn{0%{opacity:0;transform:scale(.6)}100%{opacity:1;transform:scale(1)}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.12);opacity:1}100%{transform:scale(1)}}
+@keyframes dots{0%,80%,100%{transform:translateY(0);opacity:.5}40%{transform:translateY(-8px);opacity:1}}
+@keyframes drift{0%,100%{transform:translateX(-6px)}50%{transform:translateX(10px)}}
+@keyframes beat{0%,100%{transform:translateY(-50%) scale(1)}15%{transform:translateY(-50%) scale(1.22)}30%{transform:translateY(-50%) scale(1)}}
+@keyframes cdPop{0%{transform:scale(.2);opacity:0}40%{transform:scale(1.22);opacity:1}60%{transform:scale(.9)}78%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
+@keyframes flash{0%{opacity:0}12%{opacity:1}100%{opacity:0}}
+@keyframes throb{0%,100%{transform:scale(1)}50%{transform:scale(.84)}}
+@keyframes floatUp{0%{transform:translate(0,0) scale(.3);opacity:0}15%{opacity:1;transform:translate(calc(var(--dx)*.2),-24px) scale(1)}100%{transform:translate(var(--dx),-190px) scale(.85) rotate(var(--rot));opacity:0}}
+@keyframes flipY{0%{transform:perspective(900px) rotateY(0)}50%{transform:perspective(900px) rotateY(90deg);filter:blur(4px)}100%{transform:perspective(900px) rotateY(0)}}
+@keyframes stripIn{0%{opacity:0;transform:translateY(40px) rotate(-8deg) scale(.9)}100%{opacity:1}}
+@keyframes swap{0%{transform:rotate(-5deg) scale(.93)}100%{transform:rotate(-2deg) scale(1)}}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes sysIn{from{opacity:0;transform:translate(-50%,-50%) scale(.92)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes zz{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(-8px);opacity:1}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+@media (max-width:860px){
+  .stage{grid-template-columns:minmax(0,1fr)}
+  .panel{position:static}
+  .tk,.tk.third{grid-column:1/-1}
+}
+@media (max-width:700px){.compare{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+
+<div class="page">
+  <header class="top">
+    <div class="brand">
+      <span id="brandBunny"></span>
+      <div><b>mochi<span>cam</span></b><small>kawaii booth · android prototype</small></div>
+    </div>
+    <p class="lede">tap through it like the real app. it opens on first launch: splash, permissions, then your name. everything after that is fair game.</p>
+  </header>
+
+  <section class="stage" aria-label="interactive prototype">
+    <div class="phone-col">
+      <div class="fit" id="mainFit" data-w="412" data-h="915"></div>
+      <p class="dev-label" id="devLabel">galaxy-size frame · 412 × 915</p>
+    </div>
+    <aside class="panel">
+      <div class="pcard">
+        <h2>jump to a screen</h2>
+        <ol class="jump" id="jump">
+          <li><button data-jump="splash"><b>1</b>splash</button></li>
+          <li><button data-jump="perms"><b>2</b>permissions</button></li>
+          <li><button data-jump="name"><b>3</b>your name</button></li>
+          <li><button data-jump="home"><b>4</b>home</button></li>
+          <li><button data-jump="camera"><b>5</b>camera</button></li>
+          <li><button data-jump="strip"><b>6</b>strip result</button></li>
+          <li><button data-jump="gallery"><b>7</b>gallery</button></li>
+          <li><button data-jump="empty"><b>8</b>empty gallery</button></li>
+        </ol>
+      </div>
+      <div class="pcard">
+        <h2>phone width</h2>
+        <div class="wseg" id="wseg">
+          <button data-w="360" data-h="800" aria-pressed="false">360</button>
+          <button data-w="412" data-h="915" aria-pressed="true">412</button>
+          <button data-w="430" data-h="932" aria-pressed="false">430</button>
+        </div>
+        <p>the live layout reflows at each width. nothing is just scaled.</p>
+      </div>
+      <div class="pcard">
+        <h2>reset</h2>
+        <div class="prow">
+          <button class="pbtn" id="replay">replay first launch</button>
+          <button class="pbtn" id="refill">refill gallery</button>
+        </div>
+      </div>
+      <div class="pcard">
+        <h2>try this</h2>
+        <ul class="tips">
+          <li>pick 4-cut on home, then tap the shutter</li>
+          <li>tap filter chips in the camera to tint the preview</li>
+          <li>swipe the frame picker on your strip</li>
+          <li>open a photo in the gallery and delete it</li>
+        </ul>
+      </div>
+    </aside>
+  </section>
+
+  <section aria-labelledby="sizesH">
+    <div class="sec-head">
+      <h2 id="sizesH">small and large android</h2>
+      <p>home and camera at 360 and 430 px wide. side gutters, the shutter and the photo strip scale with the screen width; type sizes stay fixed so copy never gets tiny.</p>
+    </div>
+    <div class="compare" id="compare"></div>
+  </section>
+
+  <section aria-labelledby="tokH">
+    <div class="sec-head">
+      <h2 id="tokH">design tokens</h2>
+      <p>exact values used in this prototype, ready to drop into a react native / expo theme. all sizes are dp.</p>
+    </div>
+    <div class="tok-grid">
+      <div class="tk full">
+        <h3>colors <small>brand + derived</small></h3>
+        <div class="sw-grid" id="swatches"></div>
+      </div>
+      <div class="tk">
+        <h3>type scale <small>fredoka + nunito</small></h3>
+        <div class="tblwrap"><table>
+          <thead><tr><th>token</th><th>font</th><th>size / line</th><th>use</th></tr></thead>
+          <tbody>
+            <tr><td><b>display</b></td><td>Fredoka 700</td><td>44 / 48</td><td>splash wordmark</td></tr>
+            <tr><td><b>title</b></td><td>Fredoka 600</td><td>28 / 32</td><td>greeting, screen titles</td></tr>
+            <tr><td><b>buttonLg</b></td><td>Fredoka 600</td><td>22 / 26</td><td>start booth, that's me</td></tr>
+            <tr><td><b>heading</b></td><td>Fredoka 600</td><td>20 / 24</td><td>card + sheet titles</td></tr>
+            <tr><td><b>button</b></td><td>Fredoka 600</td><td>19 / 24</td><td>pill buttons</td></tr>
+            <tr><td><b>body</b></td><td>Nunito 600</td><td>15 / 22</td><td>body copy, inputs</td></tr>
+            <tr><td><b>toast</b></td><td>Nunito 800</td><td>14 / 18</td><td>toast text</td></tr>
+            <tr><td><b>caption</b></td><td>Nunito 700</td><td>13 / 18</td><td>helper text</td></tr>
+            <tr><td><b>micro</b></td><td>Nunito 800</td><td>11 / 14</td><td>chip labels, badges</td></tr>
+            <tr><td><b>countdown</b></td><td>Fredoka 700</td><td>150 / 150</td><td>3-2-1</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div class="tk">
+        <h3>radii <small>dp</small></h3>
+        <div class="r-row">
+          <div class="r-item"><i style="border-radius:6px"></i><span class="mono">photo 6</span></div>
+          <div class="r-item"><i style="border-radius:12px"></i><span class="mono">sm 12</span></div>
+          <div class="r-item"><i style="border-radius:16px"></i><span class="mono">md 16</span></div>
+          <div class="r-item"><i style="border-radius:24px"></i><span class="mono">card 24</span></div>
+          <div class="r-item"><i style="border-radius:32px"></i><span class="mono">sheet 32</span></div>
+          <div class="r-item"><i style="border-radius:999px"></i><span class="mono">pill 999</span></div>
+        </div>
+        <h3>spacing <small>4-pt scale</small></h3>
+        <div class="sp-list">
+          <div class="sp-row"><span class="mono">4</span><i style="width:4px"></i></div>
+          <div class="sp-row"><span class="mono">8</span><i style="width:8px"></i></div>
+          <div class="sp-row"><span class="mono">12</span><i style="width:12px"></i></div>
+          <div class="sp-row"><span class="mono">16</span><i style="width:16px"></i></div>
+          <div class="sp-row"><span class="mono">20</span><i style="width:20px"></i></div>
+          <div class="sp-row"><span class="mono">24</span><i style="width:24px"></i></div>
+          <div class="sp-row"><span class="mono">32</span><i style="width:32px"></i></div>
+          <div class="sp-row"><span class="mono">40</span><i style="width:40px"></i></div>
+        </div>
+        <p class="mono" style="margin:0;color:var(--plum-2)">screen gutter = clamp(16, 5% width, 22) · status bar 32 · gesture bar 24</p>
+      </div>
+      <div class="tk">
+        <h3>shadows</h3>
+        <div class="sh-row">
+          <div class="sh-item"><i style="background:var(--pink);box-shadow:var(--glow)"></i><b>glow</b><span class="mono">0 10 28 #FF8FBF @38%</span><span>primary buttons, shutter, toast</span></div>
+          <div class="sh-item"><i style="box-shadow:var(--soft)"></i><b>soft</b><span class="mono">0 4 16 #6B4A5E @10%</span><span>cards, icon buttons</span></div>
+          <div class="sh-item"><i style="box-shadow:var(--lift)"></i><b>lift</b><span class="mono">0 14 34 #6B4A5E @16%</span><span>photo strip, sheets</span></div>
+          <div class="sh-item"><i style="background:var(--pink);box-shadow:var(--lip)"></i><b>lip</b><span class="mono">inset 0 -4 0 #FF78AF @35%</span><span>bottom edge on pills</span></div>
+        </div>
+      </div>
+      <div class="tk">
+        <h3>motion</h3>
+        <ul class="mo-list">
+          <li><b>squish</b> · press to scale 0.92 in 80 ms, release on spring cubic-bezier(.34,1.56,.64,1) 280 ms (reanimated: damping 12, stiffness 260)</li>
+          <li><b>countdown</b> · each number 720 ms: 0.2 → 1.22 → 0.9 → 1.05 → 1, one per 850 ms</li>
+          <li><b>flash</b> · white overlay 0 → 1 → 0, 500 ms (800 ms with flash on)</li>
+          <li><b>hearts</b> · 12 hearts, 1.6 s, rise 190, drift ±60, stagger 0–250 ms</li>
+          <li><b>toast</b> · spring in from +16 y and 0.9 scale, hold 1.9 s</li>
+          <li><b>screen enter</b> · fade + 10 rise, 340 ms ease</li>
+          <li><b>mascot idle</b> · bob 7 dp every 2.4 s, ear wiggle every 3.6 s</li>
+        </ul>
+      </div>
+      <div class="tk full">
+        <h3>components</h3>
+        <div class="comp" id="comps"></div>
+      </div>
+      <div class="tk full">
+        <div class="code-head">
+          <h3>theme.ts</h3>
+          <button class="pbtn" id="copyTheme">copy</button>
+        </div>
+        <div class="code-head"><p>fonts come from @expo-google-fonts/fredoka and @expo-google-fonts/nunito. the boxShadow strings work as-is in react native 0.76+ (expo sdk 52+); on older versions use elevation with shadowColor.</p></div>
+        <pre id="themeCode"></pre>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const disp = s => String(s || '').trim().toLowerCase();
+
+/* ---------- icons + decor ---------- */
+const ICON = {
+  close:'<path d="M6 6l12 12M18 6L6 18"/>',
+  back:'<path d="M15 5l-7 7 7 7"/>',
+  next:'<path d="M9 5l7 7-7 7"/>',
+  flip:'<path d="M4.5 10A8 8 0 0 1 18 6.5L20 8.5"/><path d="M20 4v4.5h-4.5"/><path d="M19.5 14A8 8 0 0 1 6 17.5L4 15.5"/><path d="M4 20v-4.5h4.5"/>',
+  timer:'<circle cx="12" cy="13.5" r="7.5"/><path d="M12 10v3.5l2.5 2"/><path d="M9.5 3h5"/>',
+  flash:'<path d="M13 2.5L5 13.5h6l-1 8 8-11h-6l1-8z"/>',
+  flashOff:'<path d="M13 2.5L5 13.5h6l-1 8 8-11h-6l1-8z"/><path d="M3.5 3.5l17 17"/>',
+  camera:'<path d="M4 8.5A2.5 2.5 0 0 1 6.5 6H8l1.5-2h5L16 6h1.5A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z"/><circle cx="12" cy="12.5" r="3.5"/>',
+  photos:'<rect x="3.5" y="6" width="13.5" height="13.5" rx="3"/><path d="M7.5 3h10A3.5 3.5 0 0 1 21 6.5v10"/><path d="M3.5 16l4-4 5 5"/>',
+  share:'<path d="M12 15V3.5"/><path d="M7.5 8L12 3.5 16.5 8"/><path d="M5 13v5a2.5 2.5 0 0 0 2.5 2.5h9A2.5 2.5 0 0 0 19 18v-5"/>',
+  trash:'<path d="M4 7h16"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l1 12.5h9l1-12.5"/>',
+  pencil:'<path d="M4 20h4L19.5 8.5l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  single:'<rect x="5" y="4" width="14" height="16" rx="3"/><circle cx="12" cy="11" r="3"/>',
+  strip:'<rect x="7.5" y="2.5" width="9" height="19" rx="2"/><path d="M10 7h4M10 11h4M10 15h4"/>',
+  chat:'<path d="M5 19V7a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H8.5z"/>',
+  link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+  nearby:'<circle cx="12" cy="12" r="2"/><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.5 5.5a9.2 9.2 0 0 0 0 13M18.5 5.5a9.2 9.2 0 0 1 0 13"/>',
+  save:'<path d="M12 4v11"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M5 19.5h14"/>',
+};
+const ic = (n, s = 22, sw = 2.2) => `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[n]}</svg>`;
+const HEART_P = 'M12 20.5s-7.6-4.5-9.5-9.1C1.1 8 3.1 4.5 6.7 4.5c2.2 0 3.8 1.3 5.3 3.2 1.5-1.9 3.1-3.2 5.3-3.2 3.6 0 5.6 3.5 4.2 6.9-1.9 4.6-9.5 9.1-9.5 9.1z';
+const SPARK_P = 'M12 1.5c.9 5.6 4.9 9.6 10.5 10.5-5.6.9-9.6 4.9-10.5 10.5C11.1 16.9 7.1 12.9 1.5 12 7.1 11.1 11.1 7.1 12 1.5z';
+const CLOUD_P = 'M15 37h35a12 12 0 0 0 1.5-23.9A16 16 0 0 0 21.6 9 12 12 0 0 0 15 37z';
+const heart = (s = 16, fill = 'currentColor') => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="${HEART_P}" fill="${fill}"/></svg>`;
+const spark = (x, y, s, c, d = 0) => `<svg class="spark" style="left:${x};top:${y};width:${s}px;height:${s}px;animation-delay:${d}s" viewBox="0 0 24 24" aria-hidden="true"><path d="${SPARK_P}" fill="${c}"/></svg>`;
+const cloud = (cls, w) => `<svg class="cloud ${cls}" width="${w}" height="${w * .625}" viewBox="0 0 64 40" aria-hidden="true"><path d="${CLOUD_P}" fill="#fff"/></svg>`;
+
+/* mochi the bunny, our mascot */
+function bunny(size = 120, mood = 'happy', cls = '') {
+  const P = '#6B4A5E';
+  let eyes;
+  if (mood === 'sleep') eyes = `<path d="M39 70q7 6 14 0M67 70q7 6 14 0" stroke="${P}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  else if (mood === 'wink') eyes = `<ellipse cx="46" cy="70" rx="4.2" ry="5" fill="${P}"/><circle cx="47.6" cy="68" r="1.5" fill="#fff"/><path d="M68 71q6-6 12 0" stroke="${P}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  else eyes = `<ellipse cx="46" cy="70" rx="4.2" ry="5" fill="${P}"/><ellipse cx="74" cy="70" rx="4.2" ry="5" fill="${P}"/><circle cx="47.6" cy="68" r="1.5" fill="#fff"/><circle cx="75.6" cy="68" r="1.5" fill="#fff"/>`;
+  const mouth = mood === 'sleep' ? `<ellipse cx="60" cy="83" rx="2.6" ry="2" fill="${P}"/>` : `<path d="M54 80q3 4 6 0q3 4 6 0" stroke="${P}" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+  return `<svg class="bunny ${cls}" width="${size}" height="${size}" viewBox="0 0 120 120" aria-hidden="true">
+    <ellipse cx="60" cy="111" rx="30" ry="4.5" fill="${P}" opacity=".08"/>
+    <g class="ear ear-l"><g transform="rotate(-10 44 52)"><rect x="34" y="6" width="20" height="52" rx="10" fill="#fff" stroke="${P}" stroke-width="3"/><rect x="39.5" y="14" width="9" height="34" rx="4.5" fill="#FFB7D5"/></g></g>
+    <g class="ear ear-r"><g transform="rotate(12 76 52)"><rect x="66" y="6" width="20" height="52" rx="10" fill="#fff" stroke="${P}" stroke-width="3"/><rect x="71.5" y="14" width="9" height="34" rx="4.5" fill="#FFB7D5"/></g></g>
+    <ellipse cx="60" cy="75" rx="40" ry="33" fill="#fff" stroke="${P}" stroke-width="3"/>
+    ${eyes}
+    <ellipse cx="35" cy="82" rx="7" ry="4.5" fill="#FFB7D5" opacity=".9"/>
+    <ellipse cx="85" cy="82" rx="7" ry="4.5" fill="#FFB7D5" opacity=".9"/>
+    ${mouth}
+    <path d="M86 34q2 7 9 9q-7 2-9 9q-2-7-9-9q7-2 9-9z" fill="#FFE07A" stroke="${P}" stroke-width="2" stroke-linejoin="round"/>
+  </svg>`;
+}
+
+/* ---------- data ---------- */
+const FILTERS = [
+  {id:'original', name:'original', tint:'transparent', css:'none'},
+  {id:'peachy', name:'peachy', tint:'rgba(255,186,150,.32)', css:'saturate(1.06)'},
+  {id:'strawberry', name:'strawberry milk', tint:'rgba(255,168,205,.36)', css:'brightness(1.04)'},
+  {id:'mint', name:'mint soda', tint:'rgba(140,232,196,.34)', css:'none'},
+  {id:'lavender', name:'lavender dream', tint:'rgba(196,170,255,.38)', css:'none'},
+  {id:'cotton', name:'cotton candy', tint:'linear-gradient(135deg,rgba(255,170,206,.42),rgba(205,182,255,.34),rgba(160,232,206,.34))', css:'none'},
+  {id:'bw', name:'soft b&w', tint:'rgba(255,246,240,.14)', css:'grayscale(1) contrast(.9) brightness(1.06)'},
+  {id:'sunset', name:'sunset glow', tint:'linear-gradient(180deg,rgba(255,212,130,.36),rgba(255,140,170,.36))', css:'saturate(1.12)'},
+];
+const FM = Object.fromEntries(FILTERS.map(f => [f.id, f]));
+const SCENES = [
+  ['#FFE1EC','#FFF6D6','#FFC4DC'],
+  ['#E6DAFF','#DDF7EC','#C9B6FF'],
+  ['#FFF3C4','#FFE0EC','#FFD08F'],
+  ['#D8F5E8','#FFF6F0','#A8E8CF'],
+  ['#FFE9DE','#EADFFF','#FFB7C9'],
+  ['#F9E1FF','#FFF1A8','#E4C9FF'],
+];
+const svgUrl = s => `url('data:image/svg+xml,${encodeURIComponent(s)}')`;
+const PAT = {
+  hearts: svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="${HEART_P}" transform="translate(4 4) scale(.66)" fill="#fff" fill-opacity=".65"/></svg>`),
+  clouds: svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="50" viewBox="0 0 64 50"><path d="${CLOUD_P}" fill="#fff" fill-opacity=".85"/></svg>`),
+  stars: svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26"><path d="${SPARK_P}" transform="translate(2 2) scale(.55)" fill="#fff"/><circle cx="20" cy="20" r="2" fill="#FFB7D5"/></svg>`),
+};
+const FRAMES = [
+  {id:'hearts', name:'pink hearts', bg:`${PAT.hearts} 0 0/22px 22px, #FFB7D5`},
+  {id:'clouds', name:'clouds', bg:`${PAT.clouds} 0 0/46px 36px, linear-gradient(180deg,#D9C6FF,#C8F2E0)`},
+  {id:'bunny', name:'bunny', bg:'#FFF6F0'},
+  {id:'checker', name:'checkered', bg:'repeating-conic-gradient(#FFB7D5 0 25%, #FFF6F0 0 50%) 0 0/16px 16px'},
+  {id:'stars', name:'stars', bg:`${PAT.stars} 0 0/24px 24px, #FFF1A8`},
+  {id:'plain', name:'plain white', bg:'#FFFFFF'},
+];
+const FR = Object.fromEntries(FRAMES.map(f => [f.id, f]));
+
+const pad = n => String(n).padStart(2, '0');
+const stampOf = d => `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}`;
+const MONTHS = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+const daysAgo = n => { const d = new Date(); d.setDate(d.getDate() - n); return d; };
+const whenOf = d => { const t = new Date(); return d.toDateString() === t.toDateString() ? 'today' : `${MONTHS[d.getMonth()]} ${d.getDate()}`; };
+let uidN = 1; const uid = () => 'p' + (uidN++);
+const defaultCap = name => `${disp(name) || 'bestie'}'s bestie day ♡`;
+
+function samples(name) {
+  const mk = (type, o, ago) => { const d = daysAgo(ago); return {id:uid(), type, stamp:stampOf(d), when:whenOf(d), ...o}; };
+  const sh = (seed, filter) => [0,1,2,3].map(p => ({seed, pose:p, filter}));
+  return [
+    mk('strip', {photos:sh(1,'strawberry'), filter:'strawberry', frame:'hearts', caption:defaultCap(name), defaultCap:true, showDate:true, showCaption:true}, 0),
+    mk('photo', {seed:2, pose:1, filter:'mint'}, 0),
+    mk('photo', {seed:4, pose:2, filter:'peachy'}, 2),
+    mk('strip', {photos:sh(3,'lavender'), filter:'lavender', frame:'stars', caption:'boba run ♡', showDate:true, showCaption:true}, 2),
+    mk('photo', {seed:0, pose:0, filter:'cotton'}, 5),
+    mk('photo', {seed:5, pose:3, filter:'bw'}, 8),
+    mk('strip', {photos:sh(4,'sunset'), filter:'sunset', frame:'bunny', caption:'sunday picnic', showDate:true, showCaption:true}, 10),
+    mk('photo', {seed:3, pose:1, filter:'sunset'}, 10),
+    mk('photo', {seed:1, pose:2, filter:'original'}, 12),
+  ];
+}
+
+/* ---------- building blocks ---------- */
+function photo(p, style = '') {
+  const sc = SCENES[(p.seed || 0) % SCENES.length];
+  const f = FM[p.filter] || FM.original;
+  const pose = (p.pose || 0) % 4;
+  const tilt = [-6, 0, 7, -2][pose];
+  const ears = pose === 1 ? '<i class="pe-ears"><b></b><b></b></i>' : '';
+  const st = pose === 2 ? `<span class="pe-st">${heart(40, '#FF8FBF')}</span>` : pose === 3 ? `<span class="pe-st"><svg viewBox="0 0 24 24" width="40" height="40" aria-hidden="true"><path d="${SPARK_P}" fill="#FFE07A"/></svg></span>` : '';
+  return `<div class="ph" style="--a:${sc[0]};--b:${sc[1]};--c:${sc[2]};${style}"><div class="ph-scene" style="filter:${f.css}"><div class="ph-person" style="--tilt:${tilt}deg">${ears}<i class="ph-head"></i><i class="ph-body"></i></div>${st}</div><div class="ph-tint" style="background:${f.tint}"></div></div>`;
+}
+function stripHTML(it, cls = '') {
+  const fr = FR[it.frame] || FR.plain;
+  return `<div class="strip f-${fr.id} ${cls}" style="background:${fr.bg}">
+    ${fr.id === 'bunny' ? '<i class="s-ear l"></i><i class="s-ear r"></i>' : ''}
+    <div class="strip-photos">${it.photos.map(p => `<div class="sp">${photo(p)}</div>`).join('')}</div>
+    <div class="strip-foot">
+      <div class="s-cap"${it.showCaption ? '' : ' hidden'}>${esc(it.caption)}</div>
+      <div class="s-meta"><span class="s-date"${it.showDate ? '' : ' hidden'}>${it.stamp}</span><span>mochicam ♡</span></div>
+    </div>
+  </div>`;
+}
+const firstPhoto = it => it.type === 'strip' ? it.photos[0] : it;
+const sigIcons = `<svg width="15" height="12" viewBox="0 0 15 12" aria-hidden="true"><rect x="0" y="8" width="2.6" height="4" rx="1" fill="currentColor"/><rect x="4" y="5.5" width="2.6" height="6.5" rx="1" fill="currentColor"/><rect x="8" y="3" width="2.6" height="9" rx="1" fill="currentColor"/><rect x="12" y="0" width="2.6" height="12" rx="1" fill="currentColor"/></svg>
+<svg width="15" height="12" viewBox="0 0 24 19" aria-hidden="true"><path d="M12 19L0 4.5C3.3 1.7 7.5 0 12 0s8.7 1.7 12 4.5z" fill="currentColor"/></svg>
+<svg width="22" height="12" viewBox="0 0 22 12" aria-hidden="true"><rect x=".75" y=".75" width="18.5" height="10.5" rx="3" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".5"/><rect x="2.5" y="2.5" width="13" height="7" rx="1.6" fill="currentColor"/><rect x="20.2" y="4" width="1.6" height="4" rx=".8" fill="currentColor" opacity=".5"/></svg>`;
+const timeStr = () => { const d = new Date(); return `${d.getHours()}:${pad(d.getMinutes())}`; };
+const phoneShell = (w, h, dark, inner = '') => `<div class="phone" style="--w:${w}px;--h:${h}px">
+  <div class="scr${dark ? ' dark' : ''}">
+    <div class="screen-host">${inner}</div>
+    <div class="layer"><div class="toast" role="status" aria-live="polite"></div><div class="over"></div><div class="fx"></div></div>
+    <div class="sbar"><span class="sb-time">${timeStr()}</span><span class="sb-hole"></span><span class="sb-ic">${sigIcons}</span></div>
+    <div class="nbar"><i></i></div>
+  </div></div>`;
+
+/* ---------- screens ---------- */
+const permCard = (key, tint, icon, title, text, state) => `
+  <div class="perm ${tint}${state === 'denied' ? ' denied' : ''}">
+    <div class="perm-ic">${ic(icon, 26)}</div>
+    <div class="perm-txt"><b class="t-head">${title}</b><span>${state === 'denied' ? 'no worries! tap to try again' : text}</span></div>
+    ${state === true ? `<span class="ok-pill">${ic('check', 16, 2.8)} allowed</span>` : `<button class="btn-sm" data-act="allow" data-perm="${key}">${state === 'denied' ? 'retry' : 'allow'}</button>`}
+  </div>`;
+
+const SCREENS = {
+  splash: () => `<div class="screen s-splash">
+    <i class="blob bl1"></i><i class="blob bl2"></i><i class="blob bl3"></i>
+    ${spark('16%','20%',20,'#FFE07A',0)}${spark('80%','26%',14,'#FF8FBF',.6)}${spark('76%','68%',22,'#B89BFF',1.1)}${spark('14%','64%',12,'#7FDDB5',.3)}
+    <div class="splash-c">
+      ${bunny(156,'happy','bob')}
+      <div class="wordmark">mochi<span>cam</span></div>
+      <div class="tagpill">kawaii booth ♡</div>
+    </div>
+    <div class="loader" aria-label="loading"><i></i><i></i><i></i></div>
+  </div>`,
+
+  perms: st => { const c = st.perms.camera, p = st.perms.photos; return `<div class="screen s-perms">
+    <div class="perm-head">
+      <div class="perm-m">${bunny(112,'wink','bob')}${spark('-18%','10%',16,'#FFE07A',.2)}${spark('104%','34%',12,'#FF8FBF',.9)}</div>
+      <h1 class="t-title">hi! i'm mochi ♡</h1>
+      <p class="t-body sub">i just need two tiny things before we play</p>
+    </div>
+    <div class="perm-list">
+      ${permCard('camera','mint','camera','camera','so we can snap your cutest moments', c)}
+      ${permCard('photos','lav','photos','photos','so your strips save to your gallery', p)}
+    </div>
+    <div class="grow"></div>
+    <button class="btn" data-act="permNext"${c === true && p === true ? '' : ' disabled'}>next ♡</button>
+    <p class="t-cap perm-note">you can change this anytime in settings</p>
+  </div>`; },
+
+  name: st => `<div class="screen s-name">
+    <div class="grow"></div>
+    <div class="name-m">
+      <div class="bubble t-title">what should we call you? ♡</div>
+      ${bunny(130,'happy','bob')}
+    </div>
+    <div class="name-field">
+      <input id="nameInput" class="name-input" type="text" maxlength="14" placeholder="type your name" autocomplete="off" spellcheck="false" aria-label="your name" value="${esc(st.draft)}">
+      <span class="name-heart">${heart(22,'#FF8FBF')}</span>
+    </div>
+    <div class="picks"><span class="t-cap">quick picks</span>${['sara','bestie','sunshine'].map(n => `<button class="pick" data-act="pick" data-n="${n}">${n}</button>`).join('')}</div>
+    <p class="name-prev t-body">we'll say <b class="np">hi, ${esc(disp(st.draft) || '…')}! ✨</b></p>
+    <div class="grow"></div>
+    <button class="btn btn-xl save-name" data-act="saveName"${disp(st.draft) ? '' : ' disabled'}>that's me! ✨</button>
+  </div>`,
+
+  home: st => { const g = st.gallery; return `<div class="screen s-home">
+    <header class="home-top">
+      <div class="greet"><h1 class="t-title">hi, ${esc(disp(st.name))}! ✨</h1><p class="t-body sub">ready for a cute day?</p></div>
+      <button class="ibtn" data-act="editName" aria-label="change your name">${ic('pencil',20)}</button>
+    </header>
+    <div class="hero">
+      <i class="hb hb1"></i><i class="hb hb2"></i>
+      ${cloud('c1',74)}${cloud('c2',54)}
+      ${spark('12%','16%',18,'#FFE07A',0)}${spark('84%','52%',14,'#FF8FBF',.7)}${spark('22%','70%',12,'#B89BFF',1.3)}
+      <div class="hero-bubble">say cheese ♡</div>
+      <div class="hero-m">${bunny(150,'happy','bob')}</div>
+    </div>
+    <div class="mode card">
+      <div class="mode-row"><span class="t-head">booth mode</span><em class="t-cap mode-hint">${st.mode === 'four' ? '4 shots, 1 cute strip' : 'one cute shot'}</em></div>
+      <div class="seg" data-v="${st.mode}" role="radiogroup" aria-label="booth mode">
+        <i class="seg-thumb"></i>
+        <button role="radio" aria-checked="${st.mode === 'single'}" data-act="mode" data-mode="single">${ic('single',20)} single</button>
+        <button role="radio" aria-checked="${st.mode === 'four'}" data-act="mode" data-mode="four">${ic('strip',20)} 4-cut</button>
+      </div>
+    </div>
+    <button class="btn btn-xl" data-act="start">start booth ♡</button>
+    <button class="card gal-card" data-act="go" data-to="gallery">
+      ${g.length ? `<div class="gal-thumbs">${g.slice(0,3).map(it => `<div>${photo(firstPhoto(it))}</div>`).join('')}</div>` : `<div>${bunny(46,'sleep')}</div>`}
+      <div><b>your gallery</b><span>${g.length ? `${g.length} ${g.length === 1 ? 'memory' : 'memories'} · newest ${g[0].when}` : 'nothing here yet ♡'}</span></div>
+      <span class="chev">${ic('next',18,2.6)}</span>
+    </button>
+  </div>`; },
+
+  camera: st => { const f = FM[st.filter], four = st.mode === 'four', done = st.done || 0, last = st.gallery[0]; return `<div class="screen s-cam">
+    <div class="cam-view">${photo({seed:0, pose:st.front ? 0 : 1, filter:st.filter})}</div>
+    <div class="guides" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="cam-top">
+      <button class="ibtn glass" data-act="go" data-to="home" aria-label="close camera">${ic('close',22,2.6)}</button>
+      <div class="cam-top-r">
+        <button class="ibtn glass" data-act="flip" aria-label="flip camera">${ic('flip',22)}</button>
+        <button class="ibtn glass" data-act="timer" aria-label="timer">${ic('timer',22)}<span class="tag tmr">${st.timer ? st.timer + 's' : 'off'}</span></button>
+        <button class="ibtn glass fl" data-act="flash" aria-label="flash" aria-pressed="${st.flash}">${ic(st.flash ? 'flash' : 'flashOff',22)}</button>
+      </div>
+    </div>
+    <div class="cam-pill"><span class="cp-txt">${four ? '4-cut' : 'single'}</span><span class="dots"${four ? '' : ' hidden'}>${[0,1,2,3].map(i => `<i class="${i < done ? 'on' : ''}"></i>`).join('')}</span><b class="cnt"${four ? '' : ' hidden'}>${done}/4</b></div>
+    <div class="countdown" aria-live="assertive"></div>
+    <div class="flash-ov"></div>
+    <div class="cam-sheet">
+      <div class="f-name">${heart(14,'#FF8FBF')}<span class="fn">${f.name}</span></div>
+      <div class="hscroll chips" role="listbox" aria-label="filters">
+        ${FILTERS.map(x => `<button class="chip${x.id === st.filter ? ' on' : ''}" role="option" aria-selected="${x.id === st.filter}" data-act="filter" data-f="${x.id}"><span class="ring"><div>${photo({seed:0,pose:0,filter:x.id})}</div></span><span>${x.name}</span></button>`).join('')}
+      </div>
+      <div class="shutter-row">
+        <button class="thumb" data-act="go" data-to="gallery" aria-label="open gallery">${last ? photo(firstPhoto(last)) : ''}</button>
+        <button class="shutter" data-act="shutter" aria-label="take photo"><span>${heart(26,'#fff')}</span></button>
+        <button class="mode-mini" data-act="toggleMode" aria-label="switch booth mode">${ic(four ? 'strip' : 'single',20)}<span>${four ? '4-cut' : 'single'}</span></button>
+      </div>
+    </div>
+  </div>`; },
+
+  strip: st => { const it = currentStrip(st); return `<div class="screen s-strip scroll">
+    <header class="bar">
+      <button class="ibtn" data-act="go" data-to="home" aria-label="back to home">${ic('back',22,2.6)}</button>
+      <h1 class="t-title">your strip!</h1>
+      <span class="badge">auto-saved ✓</span>
+    </header>
+    <div class="strip-stage">
+      ${spark('12%','14%',18,'#FFE07A',0)}${spark('84%','22%',14,'#FF8FBF',.5)}${spark('80%','76%',20,'#B89BFF',1)}${spark('14%','70%',12,'#7FDDB5',.8)}
+      <div class="strip-slot">${stripHTML(it)}</div>
+    </div>
+    <div class="card ctl">
+      <div class="ctl-row"><span class="t-head">frame</span><span class="t-micro">swipe for more →</span></div>
+      <div class="hscroll frames" role="listbox" aria-label="frames">
+        ${FRAMES.map(fr => `<button class="fchip${fr.id === it.frame ? ' on' : ''}" role="option" aria-selected="${fr.id === it.frame}" data-act="frame" data-frame="${fr.id}"><i style="background:${fr.bg}"></i><span>${fr.name}</span></button>`).join('')}
+      </div>
+      <div class="toggles">
+        <div class="tog"><span>date stamp</span><button class="sw" role="switch" aria-label="date stamp" aria-checked="${it.showDate}" data-act="tDate"><i></i></button></div>
+        <div class="tog"><span>caption</span><button class="sw" role="switch" aria-label="caption" aria-checked="${it.showCaption}" data-act="tCap"><i></i></button></div>
+      </div>
+      <div class="cap-wrap"${it.showCaption ? '' : ' hidden'}><input id="captionInput" class="cap-input" maxlength="26" aria-label="caption" value="${esc(it.caption)}"></div>
+    </div>
+    <div class="cta-row">
+      <button class="btn btn-2" data-act="share">${ic('share',20)} share</button>
+      <button class="btn" data-act="again">again! ✨</button>
+    </div>
+  </div>`; },
+
+  gallery: st => { const g = st.gallery;
+    if (!g.length) return `<div class="screen s-gal">
+      <header class="bar"><button class="ibtn" data-act="go" data-to="home" aria-label="back to home">${ic('back',22,2.6)}</button><h1 class="t-title">gallery</h1></header>
+      <div class="empty">
+        <div class="empty-m">${cloud('',210)}${bunny(130,'sleep')}<span class="zz">z z</span></div>
+        <h2 class="t-title">no photos yet</h2>
+        <p class="t-body sub">your cute moments will live here ✨</p>
+        <button class="btn" data-act="start">start booth ♡</button>
+      </div>
+    </div>`;
+    const groups = []; g.forEach(it => { const w = it.when === 'today' ? 'today' : 'earlier'; const last = groups[groups.length - 1]; if (last && last.when === w) last.items.push(it); else groups.push({when: w, items: [it]}); });
+    return `<div class="screen s-gal scroll">
+      <header class="bar"><button class="ibtn" data-act="go" data-to="home" aria-label="back to home">${ic('back',22,2.6)}</button><h1 class="t-title">gallery</h1><span class="count">${g.length} ♡</span></header>
+      ${groups.map(gr => `<h2 class="g-sec">${gr.when}</h2><div class="grid">${gr.items.map(it => it.type === 'strip'
+        ? `<button class="cell is-strip" data-act="open" data-id="${it.id}" aria-label="open strip">${stripHTML(it)}<span class="tg">4-cut</span></button>`
+        : `<button class="cell" data-act="open" data-id="${it.id}" aria-label="open photo">${photo(it)}</button>`).join('')}</div>`).join('')}
+    </div>`; },
+};
+function currentStrip(st) {
+  return st.gallery.find(x => x.id === st.stripId) || st.gallery.find(x => x.type === 'strip') || samples(st.name)[0];
+}
+
+/* ---------- state ---------- */
+const S = {
+  screen:'splash', firstLaunch:true, perms:{camera:false, photos:false}, permAsk:null,
+  name:'sara', draft:'', mode:'single', filter:'strawberry', timer:3, flash:false, front:true,
+  done:0, shots:[], busy:false, tok:0, stripId:null, viewId:null, gallery:[], w:412, h:915,
+};
+S.gallery = samples(S.name);
+
+/* ---------- live phone ---------- */
+const mainFit = $('#mainFit');
+mainFit.innerHTML = phoneShell(S.w, S.h, false);
+const P = mainFit.firstElementChild;
+const SCR = $('.scr', P), HOST = $('.screen-host', P), OVER = $('.over', P), FX = $('.fx', P), TOAST = $('.toast', P);
+let splashT, toastT;
+
+function go(to) {
+  S.tok++; S.busy = false; clearTimeout(splashT); OVER.innerHTML = '';
+  if (to === 'camera') S.done = 0;
+  S.screen = to; draw();
+}
+function draw() {
+  SCR.classList.toggle('dark', S.screen === 'camera');
+  HOST.innerHTML = SCREENS[S.screen](S);
+  after();
+  syncPanel();
+}
+function after() {
+  if (S.screen === 'splash') splashT = setTimeout(() => go(S.firstLaunch ? 'perms' : 'home'), 2400);
+  if (S.screen === 'name') {
+    const inp = $('#nameInput', P);
+    inp.addEventListener('input', () => { S.draft = inp.value; $('.np', P).textContent = `hi, ${disp(S.draft) || '…'}! ✨`; $('.save-name', P).disabled = !disp(S.draft); });
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter' && disp(S.draft)) ACT.saveName(); });
+  }
+  if (S.screen === 'strip') {
+    const inp = $('#captionInput', P);
+    inp.addEventListener('input', () => { const it = currentStrip(S); it.caption = inp.value; it.defaultCap = false; $('.strip-slot .s-cap', P).textContent = inp.value; });
+  }
+  $$('.hscroll', P).forEach(dragScroll);
+}
+const scaleK = () => SCR.getBoundingClientRect().width / SCR.offsetWidth || 1;
+function dragScroll(el) {
+  let st = null, just = false;
+  el.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') return; st = {x:e.clientX, l:el.scrollLeft, id:e.pointerId, moved:false}; });
+  el.addEventListener('pointermove', e => {
+    if (!st) return; const dx = (e.clientX - st.x) / scaleK();
+    if (!st.moved && Math.abs(dx) > 5) { st.moved = true; el.setPointerCapture(st.id); el.classList.add('dragging'); }
+    if (st.moved) el.scrollLeft = st.l - dx;
+  });
+  const end = () => { if (st && st.moved) { el.classList.remove('dragging'); just = true; setTimeout(() => just = false, 60); } st = null; };
+  el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
+  el.addEventListener('click', e => { if (just) { e.stopPropagation(); e.preventDefault(); } }, true);
+}
+
+/* toast + hearts */
+function toast(msg, ms = 1900) {
+  TOAST.innerHTML = `${heart(18,'#FF8FBF')}<span>${msg}</span>`;
+  TOAST.style.setProperty('--tb', S.screen === 'camera' ? '262px' : (S.screen === 'strip' ? '120px' : '100px'));
+  TOAST.classList.remove('on'); void TOAST.offsetWidth; TOAST.classList.add('on');
+  clearTimeout(toastT); toastT = setTimeout(() => TOAST.classList.remove('on'), ms);
+}
+function hearts(fromEl, n = 12) {
+  const sr = SCR.getBoundingClientRect(), k = scaleK();
+  let x = SCR.offsetWidth / 2, y = SCR.offsetHeight * .7;
+  if (fromEl) { const r = fromEl.getBoundingClientRect(); x = (r.left + r.width / 2 - sr.left) / k; y = (r.top + r.height * .3 - sr.top) / k; }
+  const cols = ['#FF8FBF','#FFB7D5','#B89BFF','#7FDDB5','#FFE07A'];
+  for (let i = 0; i < n; i++) {
+    const h = document.createElement('span'); h.className = 'fheart';
+    const s = 14 + Math.random() * 16;
+    h.style.left = x + 'px'; h.style.top = y + 'px';
+    h.style.setProperty('--dx', (Math.random() * 120 - 60) + 'px');
+    h.style.setProperty('--rot', (Math.random() * 60 - 30) + 'deg');
+    h.style.setProperty('--d', (Math.random() * .25) + 's');
+    h.innerHTML = heart(s, cols[i % cols.length]);
+    FX.appendChild(h); setTimeout(() => h.remove(), 2100);
+  }
+}
+
+/* camera helpers */
+function applyFilter() {
+  const f = FM[S.filter];
+  $('.cam-view .ph-scene', P).style.filter = f.css;
+  $('.cam-view .ph-tint', P).style.background = f.tint;
+  $$('.chip', P).forEach(c => { const on = c.dataset.f === S.filter; c.classList.toggle('on', on); c.setAttribute('aria-selected', on); });
+  const fn = $('.fn', P); fn.textContent = f.name; fn.classList.remove('bump'); void fn.offsetWidth; fn.classList.add('bump');
+}
+function setDots(n) {
+  S.done = n;
+  $$('.dots i', P).forEach((d, i) => d.classList.toggle('on', i < n));
+  const c = $('.cnt', P); if (c) c.textContent = `${n}/4`;
+}
+async function countdown(sec, my) {
+  const box = $('.countdown', P);
+  for (let k = sec; k >= 1; k--) {
+    if (S.tok !== my) return false;
+    box.innerHTML = `<span class="cd">${k}</span>`;
+    await wait(850);
+  }
+  if (S.tok !== my) return false;
+  box.innerHTML = sec ? `<span class="cd small">say cheese ♡</span>` : '';
+  await wait(sec ? 420 : 60);
+  box.innerHTML = '';
+  return S.tok === my;
+}
+async function snapFlash() {
+  const f = $('.flash-ov', P); if (!f) return;
+  f.classList.remove('go', 'bright'); void f.offsetWidth;
+  f.classList.add('go'); if (S.flash) f.classList.add('bright');
+  await wait(S.flash ? 260 : 160);
+}
+function setThumb(it) { const t = $('.thumb', P); if (!t) return; t.innerHTML = photo(firstPhoto(it)); t.classList.remove('bump'); void t.offsetWidth; t.classList.add('bump'); }
+
+async function capture() {
+  if (S.busy) return;
+  const my = S.tok, sh = $('.shutter', P), four = S.mode === 'four';
+  S.busy = true; sh.classList.add('busy');
+  const n = four ? 4 : 1;
+  if (four) { S.shots = []; setDots(0); }
+  for (let i = 0; i < n; i++) {
+    if (!(await countdown(S.timer, my))) return;
+    await snapFlash();
+    if (S.tok !== my) return;
+    const d = new Date();
+    const shot = {seed:Math.floor(Math.random() * SCENES.length), pose:four ? i : Math.floor(Math.random() * 4), filter:S.filter};
+    if (!four) {
+      const it = {id:uid(), type:'photo', ...shot, stamp:stampOf(d), when:'today'};
+      S.gallery.unshift(it); setThumb(it);
+      toast('saved to your gallery!'); hearts($('.shutter', P));
+      setTimeout(() => { if (S.tok === my && S.screen === 'camera' && !S.busy) toast('one more? ✨', 1500); }, 2300);
+    } else {
+      S.shots.push(shot); setDots(i + 1);
+      if (i < 3) { toast(`${i + 1}/4 · next pose! ✨`, 1100); await wait(900); }
+    }
+  }
+  if (S.tok !== my) return;
+  sh.classList.remove('busy'); S.busy = false;
+  if (four) {
+    toast('strip time! ✨'); hearts($('.shutter', P), 16);
+    await wait(1100);
+    if (S.tok !== my) return;
+    const d = new Date();
+    const it = {id:uid(), type:'strip', photos:S.shots, filter:S.filter, frame:'hearts', caption:defaultCap(S.name), defaultCap:true, showDate:true, showCaption:true, stamp:stampOf(d), when:'today'};
+    S.gallery.unshift(it); S.stripId = it.id;
+    go('strip');
+  }
+}
+
+/* sheets & dialogs */
+function shareSheet(kind) {
+  OVER.innerHTML = `<div class="scrim" data-act="closeOver"></div>
+  <div class="sheet" role="dialog" aria-label="share">
+    <i class="handle"></i>
+    <h3 class="t-head">share your ${kind} ♡</h3>
+    <p class="t-body">send it to your favorite people</p>
+    <div class="share-row">
+      <button data-act="shared" data-msg="sent! ♡"><i style="background:var(--mint)">${ic('chat',24)}</i>messages</button>
+      <button data-act="shared" data-msg="sent nearby! ♡"><i style="background:var(--lav)">${ic('nearby',24)}</i>nearby</button>
+      <button data-act="shared" data-msg="link copied ✓"><i style="background:var(--butter)">${ic('link',24)}</i>copy link</button>
+      <button data-act="shared" data-msg="saved a copy ✓"><i style="background:var(--pink)">${ic('save',24)}</i>save copy</button>
+    </div>
+    <button class="btn btn-ghost" data-act="closeOver">cancel</button>
+  </div>`;
+}
+function openViewer(id) {
+  const it = S.gallery.find(x => x.id === id); if (!it) return;
+  S.viewId = id;
+  SCR.classList.remove('dark');
+  OVER.innerHTML = `<div class="viewer" role="dialog" aria-label="photo">
+    <div class="v-top">
+      <button class="ibtn" data-act="closeOver" aria-label="close">${ic('back',22,2.6)}</button>
+      <div><b>${it.when}</b><span>${FM[it.filter].name}${it.type === 'strip' ? ' · 4-cut · ' + FR[it.frame].name : ''}</span></div>
+    </div>
+    <div class="v-body">${it.type === 'strip' ? stripHTML(it) : `<div class="v-photo">${photo(it)}</div>`}</div>
+    <div class="v-actions">
+      <button class="btn btn-2" data-act="share" data-kind="${it.type === 'strip' ? 'strip' : 'photo'}">${ic('share',20)} share</button>
+      <button class="btn btn-ghost" data-act="del">${ic('trash',20)} delete</button>
+    </div>
+  </div>`;
+}
+function permDialog(key) {
+  S.permAsk = key;
+  const cam = key === 'camera';
+  OVER.innerHTML = `<div class="scrim"></div>
+  <div class="sys" role="dialog" aria-label="system permission">
+    <span class="si">${ic(cam ? 'camera' : 'photos', 28, 2)}</span>
+    <p>Allow <b>MochiCam</b> to ${cam ? 'take pictures and record video' : 'access photos and videos on this device'}?</p>
+    <div class="sys-btns">
+      ${cam ? '<button data-act="sysAllow">While using the app</button><button data-act="sysAllow">Only this time</button>'
+            : '<button data-act="sysAllow">Allow all</button><button data-act="sysAllow">Select photos</button>'}
+      <button data-act="sysDeny">Don't allow</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- actions ---------- */
+const ACT = {
+  go: t => go(t.dataset.to),
+  allow: t => permDialog(t.dataset.perm),
+  sysAllow: () => { S.perms[S.permAsk] = true; OVER.innerHTML = ''; draw(); hearts(null, 8); },
+  sysDeny: () => { S.perms[S.permAsk] = 'denied'; OVER.innerHTML = ''; draw(); },
+  permNext: () => { S.draft = ''; go('name'); },
+  pick: t => { S.draft = t.dataset.n; const inp = $('#nameInput', P); inp.value = S.draft; inp.dispatchEvent(new Event('input')); },
+  saveName: () => {
+    const n = disp(S.draft); if (!n) return;
+    S.name = n; S.firstLaunch = false;
+    S.gallery.forEach(it => { if (it.defaultCap) it.caption = defaultCap(n); });
+    go('home'); toast(`nice to meet you, ${esc(n)}!`); hearts(null, 10);
+  },
+  editName: () => { S.draft = S.name; go('name'); },
+  mode: t => {
+    S.mode = t.dataset.mode;
+    const seg = $('.seg', P); seg.dataset.v = S.mode;
+    $$('.seg button', P).forEach(b => b.setAttribute('aria-checked', b.dataset.mode === S.mode));
+    $('.mode-hint', P).textContent = S.mode === 'four' ? '4 shots, 1 cute strip' : 'one cute shot';
+  },
+  start: () => go('camera'),
+  filter: t => { S.filter = t.dataset.f; applyFilter(); },
+  flip: () => {
+    S.front = !S.front; const v = $('.cam-view', P);
+    v.classList.remove('flip'); void v.offsetWidth; v.classList.add('flip');
+    setTimeout(() => { if (S.screen === 'camera') { v.innerHTML = photo({seed:0, pose:S.front ? 0 : 1, filter:S.filter}); } }, 270);
+    toast(S.front ? 'selfie camera' : 'back camera', 1200);
+  },
+  timer: () => { const seq = [3,5,10,0]; S.timer = seq[(seq.indexOf(S.timer) + 1) % seq.length]; $('.tmr', P).textContent = S.timer ? S.timer + 's' : 'off'; toast(S.timer ? `${S.timer} second timer` : 'timer off', 1200); },
+  flash: t => { S.flash = !S.flash; t.innerHTML = ic(S.flash ? 'flash' : 'flashOff', 22); t.setAttribute('aria-pressed', S.flash); toast(S.flash ? 'flash on ✨' : 'flash off', 1200); },
+  toggleMode: () => { if (S.busy) return; S.mode = S.mode === 'four' ? 'single' : 'four'; const keep = S.filter; draw(); S.filter = keep; toast(S.mode === 'four' ? '4-cut mode ✨' : 'single mode', 1200); },
+  shutter: () => capture(),
+  frame: t => {
+    const it = currentStrip(S); it.frame = t.dataset.frame;
+    $('.strip-slot', P).innerHTML = stripHTML(it, 'swap');
+    $$('.fchip', P).forEach(c => { const on = c.dataset.frame === it.frame; c.classList.toggle('on', on); c.setAttribute('aria-selected', on); });
+  },
+  tDate: t => { const it = currentStrip(S); it.showDate = !it.showDate; t.setAttribute('aria-checked', it.showDate); $('.strip-slot .s-date', P).hidden = !it.showDate; },
+  tCap: t => { const it = currentStrip(S); it.showCaption = !it.showCaption; t.setAttribute('aria-checked', it.showCaption); $('.strip-slot .s-cap', P).hidden = !it.showCaption; $('.cap-wrap', P).hidden = !it.showCaption; },
+  share: t => shareSheet(t.dataset.kind || 'strip'),
+  shared: t => { const keepViewer = S.viewId && $('.viewer', P); OVER.innerHTML = ''; if (keepViewer) openViewer(S.viewId); toast(t.dataset.msg); },
+  closeOver: () => {
+    const hadSheet = $('.sheet', P) && S.viewId && S.screen === 'gallery';
+    OVER.innerHTML = '';
+    if (hadSheet && S.gallery.find(x => x.id === S.viewId)) openViewer(S.viewId); else S.viewId = null;
+  },
+  again: () => { S.mode = 'four'; go('camera'); },
+  open: t => openViewer(t.dataset.id),
+  del: () => {
+    OVER.insertAdjacentHTML('beforeend', `<div class="scrim" data-act="closeOver"></div><div class="sheet" role="dialog" aria-label="confirm delete">
+      <i class="handle"></i>${bunny(70,'sleep')}
+      <h3 class="t-head">delete this one?</h3>
+      <p class="t-body">it'll be gone from your gallery for good</p>
+      <div class="two"><button class="btn btn-ghost" data-act="closeOver">keep it ♡</button><button class="btn" data-act="delYes">${ic('trash',20)} delete</button></div>
+    </div>`);
+    const b = $$('.sheet .bunny', OVER).pop(); if (b) b.style.alignSelf = 'center';
+  },
+  delYes: () => { S.gallery = S.gallery.filter(x => x.id !== S.viewId); S.viewId = null; OVER.innerHTML = ''; draw(); toast('poof! deleted'); },
+};
+P.addEventListener('click', e => {
+  const t = e.target.closest('[data-act]'); if (!t || !P.contains(t) || t.disabled) return;
+  const fn = ACT[t.dataset.act]; if (fn) fn(t, e);
+});
+
+/* ---------- control panel ---------- */
+function syncPanel() {
+  const cur = S.screen === 'gallery' && !S.gallery.length ? 'empty' : S.screen;
+  $$('#jump button').forEach(b => b.setAttribute('aria-current', b.dataset.jump === cur));
+}
+$('#jump').addEventListener('click', e => {
+  const b = e.target.closest('[data-jump]'); if (!b) return;
+  const j = b.dataset.jump;
+  if (j === 'splash') { go('splash'); return; }
+  if (j === 'perms') { S.perms = {camera:false, photos:false}; S.firstLaunch = true; go('perms'); return; }
+  if (j === 'name') { S.draft = ''; go('name'); return; }
+  if (j === 'empty') { S.gallery = []; go('gallery'); return; }
+  if (j === 'strip' && !S.gallery.some(x => x.type === 'strip')) { S.gallery = samples(S.name).concat(S.gallery); }
+  if (j === 'strip') S.stripId = (S.gallery.find(x => x.id === S.stripId) || S.gallery.find(x => x.type === 'strip')).id;
+  go(j);
+});
+$('#replay').addEventListener('click', () => { S.perms = {camera:false, photos:false}; S.firstLaunch = true; S.draft = ''; go('splash'); });
+$('#refill').addEventListener('click', () => { S.gallery = samples(S.name); S.stripId = null; if (['gallery','home','strip'].includes(S.screen)) go(S.screen); });
+$('#wseg').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  S.w = +b.dataset.w; S.h = +b.dataset.h;
+  P.style.setProperty('--w', S.w + 'px'); P.style.setProperty('--h', S.h + 'px');
+  mainFit.dataset.w = S.w; mainFit.dataset.h = S.h;
+  $('#devLabel').textContent = `${S.w === 360 ? 'small android' : S.w === 430 ? 'large android' : 'galaxy-size frame'} · ${S.w} × ${S.h}`;
+  $$('#wseg button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  fit();
+});
+
+/* ---------- size comparison (static renders) ---------- */
+const PS = {...S, name:'sara', mode:'four', filter:'strawberry', done:2, gallery:samples('sara')};
+const CMP = [
+  ['home', 360, 800, 'home', 'small · 360 × 800'],
+  ['home', 430, 932, 'home', 'large · 430 × 932'],
+  ['camera', 360, 800, 'camera', 'small · 360 × 800'],
+  ['camera', 430, 932, 'camera', 'large · 430 × 932'],
+];
+$('#compare').innerHTML = CMP.map(([scr, w, h, label, size]) => `<figure>
+  <div class="fitwrap"><div class="fit" data-w="${w}" data-h="${h}" data-max=".6" inert>${phoneShell(w, h, scr === 'camera', SCREENS[scr](scr === 'home' ? {...PS, mode:'single'} : PS))}</div></div>
+  <figcaption><b>${label}</b> · ${size}</figcaption></figure>`).join('');
+$$('#compare .screen').forEach(s => s.style.animation = 'none');
+
+function fit() {
+  $$('.fit').forEach(f => {
+    const w = +f.dataset.w + 20, h = +f.dataset.h + 20, max = +(f.dataset.max || 1);
+    const avail = f.parentElement.clientWidth || w;
+    const s = Math.min(max, avail / w);
+    f.firstElementChild.style.transform = `scale(${s})`;
+    f.style.width = (w * s) + 'px'; f.style.height = (h * s) + 'px';
+  });
+}
+addEventListener('resize', fit);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+setInterval(() => $$('.sb-time').forEach(t => t.textContent = timeStr()), 30000);
+
+/* ---------- token sheet ---------- */
+$('#brandBunny').innerHTML = bunny(54, 'happy', 'bob');
+const SW = [
+  ['pink','#FFB7D5','primary, buttons, shutter'],
+  ['cream','#FFF6F0','app background'],
+  ['mint','#B8F0D8','success, camera card, badge'],
+  ['lavender','#D9C6FF','secondary buttons, photos card'],
+  ['butter','#FFF1A8','tags, sparkles, highlights'],
+  ['plum','#6B4A5E','all text and icons'],
+  ['pinkDeep','#FF8FBF','derived · rings, glow, date stamp'],
+  ['pinkSoft','#FFE4EF','derived · tracks, tints'],
+  ['lavSoft','#F1EAFF','derived · stage backgrounds'],
+  ['plumSoft','#9A7B8D','derived · secondary text'],
+  ['line','#F2DCE5','derived · borders, dividers'],
+  ['white','#FFFFFF','cards, sheets, toast'],
+];
+$('#swatches').innerHTML = SW.map(([n, hx, r]) => `<div class="swatch"><i style="background:${hx}"></i><b>${n}</b><code>${hx}</code><span>${r}</span></div>`).join('');
+
+const demoStrip = {photos:[0,1,2,3].map(p => ({seed:1, pose:p, filter:'strawberry'})), frame:'hearts', caption:"sara's bestie day ♡", showDate:true, showCaption:true, stamp:stampOf(new Date())};
+const COMPS = [
+  ['PillButton', `<button class="btn" style="width:170px">start booth ♡</button><button class="btn btn-2" style="width:120px">share</button>`, 'height 60 (xl 72) · radius pill · pink fill · Fredoka 19 plum · glow + lip shadow · press squish 0.92. secondary: lavender. ghost: white + 2 dp line ring. disabled: #F3E6EC, no shadow.'],
+  ['IconButton', `<span class="ibtn">${ic('pencil',20)}</span><span class="ibtn" style="background:#C9A9C0;color:#fff">${ic('flip',22)}</span>`, '44 × 44 circle · white + soft shadow. on camera: "glass" white 26% + 12 blur + 1 dp white ring, white icon. icons 22, stroke 2.2, round caps.'],
+  ['ModeToggle', `<div class="seg" data-v="single" style="width:230px"><i class="seg-thumb"></i><button style="color:var(--plum)">${ic('single',20)} single</button><button>${ic('strip',20)} 4-cut</button></div>`, 'height 52 · track pinkSoft · thumb white pill with soft shadow, slides 380 ms spring · labels Fredoka 17 (inactive plumSoft).'],
+  ['FilterChip', `${['original','strawberry','mint','bw'].map((f, i) => `<span class="chip${i === 1 ? ' on' : ''}"><span class="ring"><div>${photo({seed:0,pose:0,filter:f})}</div></span><span>${FM[f].name}</span></span>`).join('')}`, 'width 64 · 56 circle preview with 2 dp white border · selected: 3 dp pinkDeep ring + glow · label micro 11, two lines max.'],
+  ['ShutterButton', `<span class="shutter" style="display:inline-block;width:86px"><span>${heart(26,'#fff')}</span></span>`, 'clamp(78, 21% width, 90) · white 6 dp ring · inner radial pink gradient · heart 26 · halo 5 dp pink @50% · throbs while counting.'],
+  ['Toast', `<div class="toast demo-toast">${heart(18,'#FF8FBF')}<span>saved to your gallery!</span></div>`, 'height 44 · radius pill · white · Nunito 800 14 · glow · springs up 16 dp, holds 1.9 s · sits 262 dp from bottom on camera, 100 elsewhere.'],
+  ['Card', `<div class="card" style="padding:14px 18px;display:flex;gap:12px;align-items:center"><span class="perm-ic" style="background:var(--mint)">${ic('camera',24)}</span><b class="t-head">camera</b></div>`, 'radius 24 · white (or mint / lavender for permission cards) · soft shadow · padding 16–20 · gap 12–14.'],
+  ['Badge', `<span class="badge" style="animation:none">auto-saved ✓</span><span class="count">9 ♡</span>`, 'height 28 · radius pill · mint (status) or pinkSoft (count) · Nunito 800 12 · pops in at 250 ms.'],
+  ['StripFrame', `<div style="padding-top:28px">${stripHTML({...demoStrip, frame:'bunny'}).replace('class="strip', 'style="--sw:96px" class="strip')}</div><div style="padding-top:28px">${stripHTML(demoStrip).replace('class="strip', 'style="--sw:96px" class="strip')}</div>`, 'width = clamp(124, 35% screen, 152) · padding 7.5% · photos 4:3, radius 3.5%, gap 4.5% · 6 frames · footer: caption pill (Fredoka, 8.2% width) + date stamp in pinkDeep · rotate −2°.'],
+];
+$('#comps').innerHTML = COMPS.map(([n, demo, spec]) => `<div class="comp-item"><div class="comp-demo">${demo}</div><h4>${n}</h4><p>${spec}</p></div>`).join('');
+
+const THEME = `// theme.ts · mochicam
+export const color = {
+  pink: '#FFB7D5', pinkDeep: '#FF8FBF', pinkSoft: '#FFE4EF',
+  cream: '#FFF6F0', white: '#FFFFFF',
+  mint: '#B8F0D8', mintDeep: '#7FDDB5',
+  lavender: '#D9C6FF', lavDeep: '#B89BFF', lavSoft: '#F1EAFF',
+  butter: '#FFF1A8', butterDeep: '#FFE07A',
+  plum: '#6B4A5E', plumSoft: '#9A7B8D', line: '#F2DCE5',
+};
+
+export const font = {
+  head: 'Fredoka_600SemiBold', headBold: 'Fredoka_700Bold',
+  body: 'Nunito_600SemiBold', bodyBold: 'Nunito_700Bold', bodyHeavy: 'Nunito_800ExtraBold',
+};
+
+export const type = {
+  display:   { fontFamily: font.headBold,  fontSize: 44,  lineHeight: 48 },
+  title:     { fontFamily: font.head,      fontSize: 28,  lineHeight: 32 },
+  buttonLg:  { fontFamily: font.head,      fontSize: 22,  lineHeight: 26 },
+  heading:   { fontFamily: font.head,      fontSize: 20,  lineHeight: 24 },
+  button:    { fontFamily: font.head,      fontSize: 19,  lineHeight: 24 },
+  body:      { fontFamily: font.body,      fontSize: 15,  lineHeight: 22 },
+  toast:     { fontFamily: font.bodyHeavy, fontSize: 14,  lineHeight: 18 },
+  caption:   { fontFamily: font.bodyBold,  fontSize: 13,  lineHeight: 18 },
+  micro:     { fontFamily: font.bodyHeavy, fontSize: 11,  lineHeight: 14 },
+  countdown: { fontFamily: font.headBold,  fontSize: 150, lineHeight: 150 },
+};
+
+export const radius = { photo: 6, sm: 12, md: 16, card: 24, sheet: 32, pill: 999 };
+export const space = { xs: 4, s: 8, m: 12, l: 16, xl: 20, xxl: 24, x3: 32, x4: 40 };
+export const layout = {
+  statusBar: 32, gestureBar: 24,
+  gutter: (w: number) => Math.min(22, Math.max(16, w * 0.05)),
+  shutter: (w: number) => Math.min(90, Math.max(78, w * 0.21)),
+  stripWidth: (w: number) => Math.min(152, Math.max(124, w * 0.35)),
+  button: 60, buttonXl: 72, iconButton: 44, chip: 56, toggle: 52, toast: 44,
+};
+
+export const shadow = {
+  glow: { boxShadow: '0 10px 28px rgba(255,143,191,0.38)' },
+  soft: { boxShadow: '0 4px 16px rgba(107,74,94,0.10)' },
+  lift: { boxShadow: '0 14px 34px rgba(107,74,94,0.16)' },
+  lip:  { boxShadow: 'inset 0 -4px 0 rgba(255,120,175,0.35)' },
+};
+
+export const motion = {
+  squish: { pressScale: 0.92, pressMs: 80, spring: { damping: 12, stiffness: 260 } },
+  countdown: { stepMs: 850, popMs: 720, keyframes: [0.2, 1.22, 0.9, 1.05, 1] },
+  flashMs: 500, flashOnMs: 800,
+  hearts: { count: 12, durationMs: 1600, rise: 190, drift: 60 },
+  toastHoldMs: 1900, screenEnterMs: 340,
+};
+
+export const filters = [
+  { id: 'original',   name: 'original',        tint: 'transparent' },
+  { id: 'peachy',     name: 'peachy',          tint: 'rgba(255,186,150,0.32)' },
+  { id: 'strawberry', name: 'strawberry milk', tint: 'rgba(255,168,205,0.36)' },
+  { id: 'mint',       name: 'mint soda',       tint: 'rgba(140,232,196,0.34)' },
+  { id: 'lavender',   name: 'lavender dream',  tint: 'rgba(196,170,255,0.38)' },
+  { id: 'cotton',     name: 'cotton candy',    tint: ['rgba(255,170,206,0.42)', 'rgba(205,182,255,0.34)', 'rgba(160,232,206,0.34)'] },
+  { id: 'bw',         name: 'soft b&w',        tint: 'rgba(255,246,240,0.14)', matrix: 'grayscale 1, contrast 0.9, brightness 1.06' },
+  { id: 'sunset',     name: 'sunset glow',     tint: ['rgba(255,212,130,0.36)', 'rgba(255,140,170,0.36)'] },
+] as const;
+
+export const frames = ['pink hearts', 'clouds', 'bunny', 'checkered', 'stars', 'plain white'] as const;`;
+$('#themeCode').textContent = THEME;
+$('#copyTheme').addEventListener('click', e => {
+  const b = e.currentTarget;
+  const done = () => { b.textContent = 'copied ✓'; setTimeout(() => b.textContent = 'copy', 1600); };
+  try {
+    navigator.clipboard.writeText(THEME).then(done, () => { selectCode(); b.textContent = 'press ctrl+c'; });
+  } catch (_) { selectCode(); }
+});
+function selectCode() { const r = document.createRange(); r.selectNodeContents($('#themeCode')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+
+/* boot */
+fit();
+draw();
+})();
+</script>
