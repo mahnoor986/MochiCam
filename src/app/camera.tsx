@@ -21,6 +21,7 @@ import { useToast } from '@/components/Toast';
 import { bakePhoto } from '@/lib/bake';
 import { newId, removeFile, saveToAlbum } from '@/lib/files';
 import { FILTERS, filterById, tintStyle } from '@/lib/filters';
+import { thumbOf } from '@/lib/storage';
 import { useApp } from '@/state/AppState';
 import { color, motion, radius, shadow, springEase, type, useLayout } from '@/theme';
 
@@ -328,14 +329,14 @@ export default function Camera() {
         <View style={[styles.shutterRow, { paddingHorizontal: gutter }]}>
           <View style={styles.side}>
             <Squishable
-              onPress={() => toast('the gallery comes in step 5 ♡')}
+              onPress={() => router.push('/gallery')}
               accessibilityRole="button"
               accessibilityLabel="open gallery"
               style={styles.thumb}
             >
               {latest && (
                 <Animated.View key={latest.id} entering={ZoomIn.duration(500).easing(springEase)} style={styles.fill}>
-                  <Image source={{ uri: latest.uri }} style={styles.fill} />
+                  <Image source={{ uri: thumbOf(latest) }} style={styles.fill} />
                 </Animated.View>
               )}
             </Squishable>

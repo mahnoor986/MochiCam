@@ -12,9 +12,8 @@ import { PillButton } from '@/components/PillButton';
 import { Screen } from '@/components/Screen';
 import { Sparkle } from '@/components/Sparkle';
 import { Squishable } from '@/components/Squishable';
-import { useToast } from '@/components/Toast';
 import { whenOf } from '@/lib/dates';
-import type { GalleryItem } from '@/lib/storage';
+import { thumbOf, type GalleryItem } from '@/lib/storage';
 import { useApp } from '@/state/AppState';
 import { color, radius, shadow, type } from '@/theme';
 
@@ -55,7 +54,7 @@ function GalleryCard({ items, onPress }: { items: GalleryItem[]; onPress: () => 
             {items.slice(0, 3).map((it, i) => (
               <Image
                 key={it.id}
-                source={{ uri: it.uri }}
+                source={{ uri: thumbOf(it) }}
                 style={[styles.thumb, i > 0 && { marginLeft: -12 }, { transform: [{ rotate: `${[-8, 0, 8][i]}deg` }] }]}
               />
             ))}
@@ -79,7 +78,6 @@ function GalleryCard({ items, onPress }: { items: GalleryItem[]; onPress: () => 
 
 export default function Home() {
   const { name, mode, setMode, gallery } = useApp();
-  const toast = useToast();
 
   return (
     <Screen style={styles.screen}>
@@ -109,8 +107,7 @@ export default function Home() {
       </Card>
 
       <PillButton xl label="start booth ♡" onPress={() => router.push('/camera')} />
-      {/* the gallery screen lands in step 5 */}
-      <GalleryCard items={gallery} onPress={() => toast('the gallery comes in step 5 ♡')} />
+      <GalleryCard items={gallery} onPress={() => router.push('/gallery')} />
     </Screen>
   );
 }

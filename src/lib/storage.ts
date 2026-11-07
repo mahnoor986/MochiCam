@@ -20,6 +20,9 @@ export type GalleryItem = {
   shots?: string[];
 };
 
+/** image to use for small thumbnails: a strip shows its first shot */
+export const thumbOf = (item: GalleryItem) => (item.type === 'strip' ? (item.shots?.[0] ?? item.uri) : item.uri);
+
 export type Stored = {
   name: string;
   firstLaunch: boolean;
