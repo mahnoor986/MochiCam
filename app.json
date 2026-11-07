@@ -34,6 +34,23 @@
           "image": "./assets/splash-icon.png",
           "imageWidth": 160
         }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "MochiCam uses the camera to take your cute photos and strips.",
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "MochiCam saves your photos and strips to a MochiCam album.",
+          "savePhotosPermission": "MochiCam saves your photos and strips to a MochiCam album.",
+          "granularPermissions": [
+            "photo"
+          ]
+        }
       ]
     ],
     "experiments": {

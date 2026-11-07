@@ -1,5 +1,6 @@
 // mochicam design tokens. values come from design/mochicam.html; change them here, nowhere else.
 import { useWindowDimensions } from 'react-native';
+import { Easing } from 'react-native-reanimated';
 
 export const color = {
   pink: '#FFB7D5',
@@ -88,3 +89,6 @@ export const motion = {
   screenEnter: { rise: 10, ms: 340 },
   mascot: { bob: 7, bobMs: 2400, earMs: 3600 },
 } as const;
+
+/** the prototype's --spring curve, cubic-bezier(.34,1.56,.64,1): a soft overshoot */
+export const springEase = Easing.bezier(0.34, 1.56, 0.64, 1);

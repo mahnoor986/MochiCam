@@ -6,6 +6,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
+import { ToastProvider } from '@/components/Toast';
+import { AppStateProvider } from '@/state/AppState';
 import { color } from '@/theme';
 
 SplashScreen.preventAutoHideAsync();
@@ -26,9 +28,18 @@ export default function RootLayout() {
   if (!loaded && !error) return null;
 
   return (
-    <>
-      <StatusBar style="dark" />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: color.cream } }} />
-    </>
+    <AppStateProvider>
+      <ToastProvider>
+        <StatusBar style="dark" />
+        {/* screens animate themselves in (Screen.tsx), like the prototype */}
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            animation: 'none',
+            contentStyle: { backgroundColor: color.cream },
+          }}
+        />
+      </ToastProvider>
+    </AppStateProvider>
   );
 }
