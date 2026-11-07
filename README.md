@@ -25,7 +25,10 @@ Scan from inside Expo Go: the phone's normal camera opens the link in Chrome, wh
 | --- | --- |
 | No QR code, only "Logs for your project will appear below" | You're in the MSYS2/UCRT64 bash terminal. Use PowerShell or Command Prompt instead. |
 | `npx.ps1 cannot be loaded because running scripts is disabled` | Run `npx.cmd expo start`, or once: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` |
-| Phone can't connect (office Wi-Fi, firewall, different network) | `npx.cmd expo start --tunnel` (press **Y** if it asks to install `@expo/ngrok`) |
+| Phone can't connect (office Wi-Fi, firewall, different network) | Use a tunnel. Logged in to Expo (`npx.cmd expo login`, once): `npx.cmd expo start --tunnel`. No account: `npx.cmd expo start --tunnel ngrok` (press **Y** if it asks to install `@expo/ngrok`) |
+| `Couldn't create a signed tunnel URL… You're not logged in` | Since SDK 58, plain `--tunnel` needs an Expo login. Run `npx.cmd expo login`, or use `--tunnel ngrok` |
+| The DevTools "ERROR… using a fallback version" line | Harmless, ignore it |
+| Expo Go stuck on the loading screen | The dev server was closed or is stale. Close Expo Go, run `npx.cmd expo start --clear` again, and keep the terminal open |
 | Weird errors after installing packages | `npx.cmd expo start --clear` |
 
 **To replay the first launch** (permissions + name): Android Settings → Apps → Expo Go → Storage → Clear storage.
