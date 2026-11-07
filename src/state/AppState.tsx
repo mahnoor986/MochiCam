@@ -1,11 +1,21 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
-import { loadAll, saveMode, saveName, type BoothMode, type Stored } from '@/lib/storage';
+import {
+  loadAll,
+  saveGallery,
+  saveMode,
+  saveName,
+  type BoothMode,
+  type GalleryItem,
+  type Stored,
+} from '@/lib/storage';
 
 type AppState = Stored & {
   ready: boolean;
   setName: (name: string) => void;
   setMode: (mode: BoothMode) => void;
+  /** newest first */
+  addItem: (item: GalleryItem) => void;
 };
 
 const Ctx = createContext<AppState | null>(null);
@@ -24,6 +34,11 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       .finally(() => setReady(true));
   }, []);
 
+  // keep the gallery index on disk in step with memory (skipped until the stored one is loaded)
+  useEffect(() => {
+    if (ready) saveGallery(data.gallery);
+  }, [ready, data.gallery]);
+
   const setName = useCallback((raw: string) => {
     const name = displayName(raw);
     setData((d) => ({ ...d, name, firstLaunch: false }));
@@ -35,7 +50,14 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     saveMode(mode);
   }, []);
 
-  const value = useMemo(() => ({ ...data, ready, setName, setMode }), [data, ready, setName, setMode]);
+  const addItem = useCallback((item: GalleryItem) => {
+    setData((d) => ({ ...d, gallery: [item, ...d.gallery] }));
+  }, []);
+
+  const value = useMemo(
+    () => ({ ...data, ready, setName, setMode, addItem }),
+    [data, ready, setName, setMode, addItem],
+  );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 

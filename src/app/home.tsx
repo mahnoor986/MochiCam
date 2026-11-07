@@ -108,8 +108,8 @@ export default function Home() {
         <ModeToggle value={mode} onChange={setMode} />
       </Card>
 
-      {/* camera + gallery screens land in steps 3 and 5 */}
-      <PillButton xl label="start booth ♡" onPress={() => toast('the booth opens in step 3 ♡')} />
+      <PillButton xl label="start booth ♡" onPress={() => router.push('/camera')} />
+      {/* the gallery screen lands in step 5 */}
       <GalleryCard items={gallery} onPress={() => toast('the gallery comes in step 5 ♡')} />
     </Screen>
   );
