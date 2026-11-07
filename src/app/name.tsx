@@ -11,6 +11,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+import { useHearts } from '@/components/FloatingHearts';
 import { Heart } from '@/components/Heart';
 import { Mochi } from '@/components/Mochi';
 import { PillButton } from '@/components/PillButton';
@@ -51,6 +52,7 @@ export default function Name() {
   const { edit } = useLocalSearchParams<{ edit?: string }>();
   const app = useApp();
   const toast = useToast();
+  const hearts = useHearts();
   const [draft, setDraft] = useState(edit ? app.name : '');
   const [focused, setFocused] = useState(false);
   const name = displayName(draft);
@@ -61,6 +63,7 @@ export default function Name() {
     if (edit && router.canGoBack()) router.back();
     else router.replace('/home');
     toast(edit ? `hi again, ${name}! ✨` : `nice to meet you, ${name}!`);
+    hearts(undefined, 10);
   };
 
   return (

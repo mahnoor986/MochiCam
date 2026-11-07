@@ -2,7 +2,7 @@
 import { CameraView, useCameraPermissions, type CameraType } from 'expo-camera';
 import { router, useFocusEffect } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type ComponentRef } from 'react';
 import { Image, Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, ZoomIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Countdown } from '@/components/Countdown';
 import { CHIP_WIDTH, FilterChip } from '@/components/FilterChip';
 import { FlashOverlay } from '@/components/FlashOverlay';
+import { useHearts } from '@/components/FloatingHearts';
 import { Heart } from '@/components/Heart';
 import { Icon } from '@/components/Icon';
 import { IconButton } from '@/components/IconButton';
@@ -21,6 +22,7 @@ import { useToast } from '@/components/Toast';
 import { bakePhoto } from '@/lib/bake';
 import { newId, removeFile, saveToAlbum } from '@/lib/files';
 import { FILTERS, filterById, tintStyle } from '@/lib/filters';
+import { haptic } from '@/lib/haptics';
 import { thumbOf } from '@/lib/storage';
 import { useApp } from '@/state/AppState';
 import { color, motion, radius, shadow, springEase, type, useLayout } from '@/theme';
@@ -54,7 +56,10 @@ function NoCamera({ canAsk, ask }: { canAsk: boolean; ask: () => void }) {
           {canAsk ? 'tap below so we can snap your cutest moments' : 'turn on the camera for mochicam in settings'}
         </Text>
       </View>
-      <PillButton label={canAsk ? 'allow camera' : 'open settings'} onPress={canAsk ? ask : () => Linking.openSettings()} />
+      <PillButton
+        label={canAsk ? 'allow camera' : 'open settings'}
+        onPress={canAsk ? ask : () => Linking.openSettings()}
+      />
     </View>
   );
 }
@@ -62,10 +67,16 @@ function NoCamera({ canAsk, ask }: { canAsk: boolean; ask: () => void }) {
 export default function Camera() {
   const app = useApp();
   const toast = useToast();
+  const hearts = useHearts();
   const insets = useSafeAreaInsets();
   const { gutter } = useLayout();
   const [perm, requestPerm] = useCameraPermissions();
   const cam = useRef<CameraView>(null);
+  const shutterRef = useRef<ComponentRef<typeof View>>(null);
+
+  /** hearts float up from the top third of the shutter */
+  const heartsFromShutter = (count?: number) =>
+    shutterRef.current?.measureInWindow((x, y, w, h) => hearts({ x: x + w / 2, y: y + h * 0.3 }, count));
 
   const [focused, setFocused] = useState(true);
   const [ready, setReady] = useState(false);
@@ -104,6 +115,7 @@ export default function Camera() {
     for (let k = sec; k >= 1; k--) {
       if (!alive(t)) return false;
       setCd(String(k));
+      haptic.tick();
       await wait(motion.countdown.stepMs);
     }
     if (!alive(t)) return false;
@@ -149,8 +161,10 @@ export default function Camera() {
       showCaption: false,
       createdAt: Date.now(),
     });
+    haptic.saved();
     if (!alive(t)) return;
     toast('saved to your gallery!');
+    heartsFromShutter();
     setTimeout(() => {
       if (alive(t)) toast('one more? ✨', 1500);
     }, 2300);
@@ -189,14 +203,17 @@ export default function Camera() {
       createdAt: Date.now(),
       shots,
     });
+    haptic.saved();
     if (!alive(t)) return;
     toast('strip time! ✨');
+    heartsFromShutter(16);
     await wait(1100);
     if (alive(t)) router.replace({ pathname: '/strip/[id]', params: { id } });
   }
 
   async function capture() {
     if (busy || !ready) return;
+    haptic.tap();
     const t = ++run.current;
     setBusy(true);
     try {
@@ -341,7 +358,9 @@ export default function Camera() {
               )}
             </Squishable>
           </View>
-          <ShutterButton onPress={capture} busy={busy} disabled={!ready} />
+          <View ref={shutterRef} collapsable={false}>
+            <ShutterButton onPress={capture} busy={busy} disabled={!ready} />
+          </View>
           <View style={[styles.side, styles.sideEnd]}>
             <Squishable
               onPress={toggleMode}

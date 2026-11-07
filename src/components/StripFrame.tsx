@@ -69,7 +69,9 @@ export function StripFrame({ look, width: sw, mini, onPhotoLoad, style }: Props)
       <View style={[StyleSheet.absoluteFill, { borderRadius: sw * 0.05, overflow: 'hidden' }]}>
         <FrameBackground frame={look.frame} k={Math.max(0.5, sw / 120)} />
         {look.frame === 'plain' && (
-          <View style={[StyleSheet.absoluteFill, { borderRadius: sw * 0.05, borderWidth: 1, borderColor: color.line }]} />
+          <View
+            style={[StyleSheet.absoluteFill, { borderRadius: sw * 0.05, borderWidth: 1, borderColor: color.line }]}
+          />
         )}
       </View>
       {look.frame === 'bunny' && (
@@ -121,7 +123,9 @@ export function StripFrame({ look, width: sw, mini, onPhotoLoad, style }: Props)
             ]}
           >
             {look.showDate && (
-              <Text style={[styles.metaText, { fontSize: metaSize, lineHeight: metaSize * 1.3, color: color.pinkDeep }]}>
+              <Text
+                style={[styles.metaText, { fontSize: metaSize, lineHeight: metaSize * 1.3, color: color.pinkDeep }]}
+              >
                 {stampOf(look.createdAt)}
               </Text>
             )}

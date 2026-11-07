@@ -1,12 +1,6 @@
 import { useEffect } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 
 import { CLOUD_P } from '@/components/shapes';
@@ -37,7 +31,10 @@ export function Cloud({ width, drift, reverse, style }: Props) {
   const anim = useAnimatedStyle(() => ({ transform: [{ translateX: -6 + 16 * t.value }] }));
 
   return (
-    <Animated.View pointerEvents="none" style={[{ filter: 'drop-shadow(0px 4px 8px rgba(107,74,94,0.08))' }, style, anim]}>
+    <Animated.View
+      pointerEvents="none"
+      style={[{ filter: 'drop-shadow(0px 4px 8px rgba(107,74,94,0.08))' }, style, anim]}
+    >
       <Svg width={width} height={width * 0.625} viewBox="0 0 64 40">
         <Path d={CLOUD_P} fill={color.white} />
       </Svg>

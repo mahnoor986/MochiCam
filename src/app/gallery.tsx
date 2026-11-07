@@ -94,9 +94,11 @@ function Cell({ item, size, onPress }: { item: GalleryItem; size: number; onPres
 function Viewer(props: { item: GalleryItem; onClose: () => void; onShare: () => void; onDelete: () => void }) {
   const { item } = props;
   const insets = useSafeAreaInsets();
-  const { gutter, width } = useLayout();
+  const { gutter, width, height } = useLayout();
   const reduced = useReducedMotion();
   const strip = item.type === 'strip';
+  // 78% of the width, but never so tall that the buttons get pushed off a short phone
+  const photoW = Math.min(width * 0.78 - gutter, (height - insets.top - insets.bottom - 220) * 0.75);
   const pop = useSharedValue(reduced ? 1 : 0);
   useEffect(() => {
     pop.value = withTiming(1, { duration: 600, easing: springEase });
@@ -136,7 +138,7 @@ function Viewer(props: { item: GalleryItem; onClose: () => void; onShare: () => 
           {strip ? (
             <StripFrame look={lookOf(item)} width={Math.min(156, Math.max(124, width * 0.36))} />
           ) : (
-            <View style={[styles.vPhoto, { width: width * 0.78 - gutter }]}>
+            <View style={[styles.vPhoto, { width: photoW }]}>
               <Image source={{ uri: item.uri }} style={styles.fill} resizeMode="cover" />
             </View>
           )}
@@ -325,7 +327,15 @@ const styles = StyleSheet.create({
   emptyMochi: { marginTop: -16 },
   zz: { ...type.heading, position: 'absolute', right: 30, top: 10, color: color.lavDeep },
   emptyBtn: { alignSelf: 'center', paddingHorizontal: 32, marginTop: 10 },
-  viewer: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'rgba(255,246,240,0.97)', gap: 14 },
+  viewer: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    backgroundColor: 'rgba(255,246,240,0.97)',
+    gap: 14,
+  },
   vTop: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   vBody: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   vPhoto: { aspectRatio: 3 / 4, borderRadius: radius.card, overflow: 'hidden', boxShadow: shadow.lift },

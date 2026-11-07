@@ -18,11 +18,12 @@ const LUMA = [0.2126, 0.7152, 0.0722];
 /** css saturate(s) */
 function saturate(s: number): number[] {
   const [r, g, b] = LUMA;
+  // prettier-ignore
   return [
-    r + (1 - r) * s, g - g * s, b - b * s, 0, 0,
-    r - r * s, g + (1 - g) * s, b - b * s, 0, 0,
-    r - r * s, g - g * s, b + (1 - b) * s, 0, 0,
-    0, 0, 0, 1, 0,
+    r + (1 - r) * s, g - g * s,       b - b * s,       0, 0,
+    r - r * s,       g + (1 - g) * s, b - b * s,       0, 0,
+    r - r * s,       g - g * s,       b + (1 - b) * s, 0, 0,
+    0,               0,               0,               1, 0,
   ];
 }
 

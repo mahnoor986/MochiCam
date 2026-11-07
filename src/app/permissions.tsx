@@ -2,9 +2,10 @@
 import { useCameraPermissions } from 'expo-camera';
 import { router } from 'expo-router';
 import { useEffect } from 'react';
-import { AppState, Linking, Platform, StyleSheet, Text, View } from 'react-native';
+import { AppState, Linking, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Animated, { ZoomIn } from 'react-native-reanimated';
 
+import { useHearts } from '@/components/FloatingHearts';
 import { Icon, type IconName } from '@/components/Icon';
 import { Mochi } from '@/components/Mochi';
 import { PillButton } from '@/components/PillButton';
@@ -25,13 +26,18 @@ function PermCard(props: {
   title: string;
   text: string;
   perm: Perm;
-  request: () => Promise<unknown>;
+  request: () => Promise<{ granted: boolean }>;
 }) {
+  const hearts = useHearts();
   const state = stateOf(props.perm);
   const ask = () => {
     // android stops showing the dialog after "don't allow" twice; settings is the only way back
     if (state === 'denied' && props.perm && !props.perm.canAskAgain) Linking.openSettings();
-    else props.request();
+    else
+      props
+        .request()
+        .then((r) => r.granted && hearts(undefined, 8))
+        .catch(() => {});
   };
 
   return (
@@ -83,47 +89,54 @@ export default function Permissions() {
   const ready = Platform.OS === 'web' || (!!cam?.granted && !!lib?.granted);
 
   return (
-    <Screen style={styles.screen} top={24} bottom={16}>
-      <View style={styles.head}>
-        <View style={styles.mochi}>
-          <Mochi size={112} mood="wink" bob />
-          <Sparkle x="-18%" y="10%" size={16} fill={color.butterDeep} delay={0.2} />
-          <Sparkle x="104%" y="34%" size={12} fill={color.pinkDeep} delay={0.9} />
+    <Screen top={0} bottom={0}>
+      {/* scrolls only on short phones; otherwise the button sits at the bottom */}
+      <ScrollView
+        contentContainerStyle={styles.screen}
+        showsVerticalScrollIndicator={false}
+        alwaysBounceVertical={false}
+      >
+        <View style={styles.head}>
+          <View style={styles.mochi}>
+            <Mochi size={112} mood="wink" bob />
+            <Sparkle x="-18%" y="10%" size={16} fill={color.butterDeep} delay={0.2} />
+            <Sparkle x="104%" y="34%" size={12} fill={color.pinkDeep} delay={0.9} />
+          </View>
+          <Text style={[type.title, styles.plum, styles.center]} accessibilityRole="header">
+            hi! i&apos;m mochi ♡
+          </Text>
+          <Text style={[type.body, styles.sub, styles.center]}>i just need two tiny things before we play</Text>
         </View>
-        <Text style={[type.title, styles.plum, styles.center]} accessibilityRole="header">
-          hi! i&apos;m mochi ♡
-        </Text>
-        <Text style={[type.body, styles.sub, styles.center]}>i just need two tiny things before we play</Text>
-      </View>
 
-      <View style={styles.list}>
-        <PermCard
-          tint={color.mint}
-          icon="camera"
-          title="camera"
-          text="so we can snap your cutest moments"
-          perm={cam}
-          request={requestCam}
-        />
-        <PermCard
-          tint={color.lavender}
-          icon="photos"
-          title="photos"
-          text="so your strips save to your gallery"
-          perm={lib}
-          request={requestLib}
-        />
-      </View>
+        <View style={styles.list}>
+          <PermCard
+            tint={color.mint}
+            icon="camera"
+            title="camera"
+            text="so we can snap your cutest moments"
+            perm={cam}
+            request={requestCam}
+          />
+          <PermCard
+            tint={color.lavender}
+            icon="photos"
+            title="photos"
+            text="so your strips save to your gallery"
+            perm={lib}
+            request={requestLib}
+          />
+        </View>
 
-      <View style={styles.grow} />
-      <PillButton label="next ♡" disabled={!ready} onPress={() => router.replace('/name')} />
-      <Text style={[type.caption, styles.sub, styles.center]}>you can change this anytime in settings</Text>
+        <View style={styles.grow} />
+        <PillButton label="next ♡" disabled={!ready} onPress={() => router.replace('/name')} />
+        <Text style={[type.caption, styles.sub, styles.center]}>you can change this anytime in settings</Text>
+      </ScrollView>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { gap: 14 },
+  screen: { flexGrow: 1, gap: 14, paddingTop: 24, paddingBottom: 16 },
   head: { alignItems: 'center', gap: 6, paddingTop: 12 },
   mochi: { marginBottom: 4 },
   list: { gap: 12, marginTop: 10 },

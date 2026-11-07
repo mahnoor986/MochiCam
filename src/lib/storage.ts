@@ -61,5 +61,4 @@ export const saveName = (name: string) =>
 
 export const saveMode = (mode: BoothMode) => AsyncStorage.setItem(KEY.mode, mode);
 
-export const saveGallery = (items: GalleryItem[]) =>
-  AsyncStorage.setItem(KEY.gallery, JSON.stringify(items));
+export const saveGallery = (items: GalleryItem[]) => AsyncStorage.setItem(KEY.gallery, JSON.stringify(items));

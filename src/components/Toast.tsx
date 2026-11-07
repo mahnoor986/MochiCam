@@ -27,13 +27,16 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const path = usePathname();
   const t = useSharedValue(0);
 
-  const show = useCallback<ShowToast>((text, holdMs = motion.toast.holdMs) => {
-    clearTimeout(hideT.current);
-    setMsg((m) => ({ text, n: (m?.n ?? 0) + 1 }));
-    hideT.current = setTimeout(() => {
-      t.value = withTiming(0, { duration: 200 });
-    }, holdMs);
-  }, [t]);
+  const show = useCallback<ShowToast>(
+    (text, holdMs = motion.toast.holdMs) => {
+      clearTimeout(hideT.current);
+      setMsg((m) => ({ text, n: (m?.n ?? 0) + 1 }));
+      hideT.current = setTimeout(() => {
+        t.value = withTiming(0, { duration: 200 });
+      }, holdMs);
+    },
+    [t],
+  );
 
   useEffect(() => {
     if (!msg) return;

@@ -65,7 +65,9 @@ function GalleryCard({ items, onPress }: { items: GalleryItem[]; onPress: () => 
         <View style={styles.galText}>
           <Text style={styles.galTitle}>your gallery</Text>
           <Text style={[type.caption, styles.sub]} numberOfLines={1}>
-            {n ? `${n} ${n === 1 ? 'memory' : 'memories'} · newest ${whenOf(items[0].createdAt)}` : 'nothing here yet ♡'}
+            {n
+              ? `${n} ${n === 1 ? 'memory' : 'memories'} · newest ${whenOf(items[0].createdAt)}`
+              : 'nothing here yet ♡'}
           </Text>
         </View>
         <View style={styles.chev}>

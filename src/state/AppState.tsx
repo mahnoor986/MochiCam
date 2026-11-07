@@ -1,14 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
-import {
-  loadAll,
-  saveGallery,
-  saveMode,
-  saveName,
-  type BoothMode,
-  type GalleryItem,
-  type Stored,
-} from '@/lib/storage';
+import { loadAll, saveGallery, saveMode, saveName, type BoothMode, type GalleryItem, type Stored } from '@/lib/storage';
 
 type AppState = Stored & {
   ready: boolean;

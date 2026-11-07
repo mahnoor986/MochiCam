@@ -6,6 +6,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
+import { FloatingHeartsProvider } from '@/components/FloatingHearts';
 import { ToastProvider } from '@/components/Toast';
 import { AppStateProvider } from '@/state/AppState';
 import { color } from '@/theme';
@@ -30,15 +31,17 @@ export default function RootLayout() {
   return (
     <AppStateProvider>
       <ToastProvider>
-        <StatusBar style="dark" />
-        {/* screens animate themselves in (Screen.tsx), like the prototype */}
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            animation: 'none',
-            contentStyle: { backgroundColor: color.cream },
-          }}
-        />
+        <FloatingHeartsProvider>
+          <StatusBar style="dark" />
+          {/* screens animate themselves in (Screen.tsx), like the prototype */}
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              animation: 'none',
+              contentStyle: { backgroundColor: color.cream },
+            }}
+          />
+        </FloatingHeartsProvider>
       </ToastProvider>
     </AppStateProvider>
   );

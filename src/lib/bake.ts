@@ -42,7 +42,13 @@ export async function bakePhoto(srcUri: string, filterId: string, id: string): P
     } else {
       const { start, end } = gradientPoints(filter.tint.angle, w, h);
       tint.setShader(
-        Skia.Shader.MakeLinearGradient(start, end, filter.tint.colors.map((c) => Skia.Color(c)), null, TileMode.Clamp),
+        Skia.Shader.MakeLinearGradient(
+          start,
+          end,
+          filter.tint.colors.map((c) => Skia.Color(c)),
+          null,
+          TileMode.Clamp,
+        ),
       );
     }
     canvas.drawRect(Skia.XYWHRect(0, 0, w, h), tint);

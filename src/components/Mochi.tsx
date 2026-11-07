@@ -123,8 +123,19 @@ export function Mochi({ size = 120, mood = 'happy', bob = false, style }: Props)
       ),
       -1,
     );
-    earL.value = wiggle(0.78, [[-12, 0.06], [5, 0.08], [0, 0.08]]);
-    earR.value = withDelay(200, wiggle(0.8, [[12, 0.06], [-4, 0.08], [0, 0.06]]));
+    earL.value = wiggle(0.78, [
+      [-12, 0.06],
+      [5, 0.08],
+      [0, 0.08],
+    ]);
+    earR.value = withDelay(
+      200,
+      wiggle(0.8, [
+        [12, 0.06],
+        [-4, 0.08],
+        [0, 0.06],
+      ]),
+    );
   }, [animate, y, earL, earR]);
 
   const bobStyle = useAnimatedStyle(() => ({ transform: [{ translateY: y.value }] }));

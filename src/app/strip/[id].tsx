@@ -7,6 +7,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-na
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Badge } from '@/components/Badge';
+import { screenEnter } from '@/components/Screen';
 import { Card } from '@/components/Card';
 import { FrameBackground } from '@/components/FrameBackground';
 import { Icon } from '@/components/Icon';
@@ -159,7 +160,8 @@ function StripEditor({ item }: { item: GalleryItem }) {
 
   return (
     <KeyboardAvoidingView behavior="padding" style={styles.flex}>
-      <ScrollView
+      <Animated.ScrollView
+        entering={screenEnter}
         style={styles.flex}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
@@ -254,7 +256,7 @@ function StripEditor({ item }: { item: GalleryItem }) {
           />
           <PillButton label="again! ✨" onPress={again} style={styles.flex} />
         </View>
-      </ScrollView>
+      </Animated.ScrollView>
 
       {/* hidden full-size copy that becomes the saved jpeg */}
       <View style={styles.offscreen} pointerEvents="none">

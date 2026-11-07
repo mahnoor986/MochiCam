@@ -2,13 +2,7 @@
 // (42% 58% 63% 37% / 41% 44% 56% 59%  <->  58% 42% 38% 62% / 55% 60% 40% 45%) as an svg path.
 import { useEffect } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
-import Animated, {
-  Easing,
-  useAnimatedProps,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedProps, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 
 import { useReducedMotion } from '@/hooks/useReducedMotion';
