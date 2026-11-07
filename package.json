@@ -39,7 +39,7 @@
     "start": "expo start",
     "android": "expo start --android",
     "typecheck": "tsc --noEmit",
-    "lint": "expo lint"
+    "web": "expo start --web --port 5173"
   },
   "private": true,
   "overrides": {
